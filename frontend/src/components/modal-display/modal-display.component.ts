@@ -23,7 +23,6 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class ModalDisplayComponent implements OnInit {
   report: any;
-
   constructor(
     private _reportService: ReportService,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -40,7 +39,7 @@ export class ModalDisplayComponent implements OnInit {
   }
 
   onClose(): void {
-    this._dialogRef.close(this.report);
+    this._dialogRef.close();
   }
 
   readyTimeChange(event: MatCheckboxChange): void {

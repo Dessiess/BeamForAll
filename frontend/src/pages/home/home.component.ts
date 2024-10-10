@@ -228,16 +228,19 @@ public CalendarView = CalendarView;
     this.viewDate = this.view === CalendarView.Week
     ? subWeeks(this.viewDate, 1)
     : subMonths(this.viewDate, 1);
+    this.updateDateRange();
   }
 
   goToCurrent(): void {
     this.viewDate = startOfToday();
+    this.updateDateRange();
   }
 
   goToNext(): void {
     this.viewDate = this.view === CalendarView.Week
       ? addWeeks(this.viewDate, 1)
       : addMonths(this.viewDate, 1);
+      this.updateDateRange();
   }
 
   openDialog(event: any): void {

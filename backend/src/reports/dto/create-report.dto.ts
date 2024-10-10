@@ -31,10 +31,4 @@ export class CreateReportDto {
     @IsString()
     @IsNotEmpty()
     end_time: string;
-
-    // @IsDateString()
-    // arrival_time: Date;
-
-    // @IsDateString()
-    // ready_time: Date;
 }
