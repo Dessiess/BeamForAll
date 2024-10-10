@@ -51,6 +51,7 @@ public CalendarView = CalendarView;
     // radi se "subscribe na event" kada se iz modala klikne na submit, onda se ovde dobije taj objekat koji smo uneli
     // u ovom trenutku se nista ne desava u ovoj metodi, vec si se samo subscribe na event koji ce se desiti u buducnosti
     this._subscribeOnAddReportModalAction(); 
+    this._subscribeOnUpdateReportModalAction();
     
     // salje se poziv ka backend-u 
     this._fetchEventsAndFormatForTheCalendar();
@@ -92,12 +93,23 @@ public CalendarView = CalendarView;
       this._handleNewReport(report);
     });
   }
+
+  private _subscribeOnUpdateReportModalAction(): void {
+    this.reportService.updateReport.subscribe((report: any) => {
+      const inx = this.events.findIndex(event => event.meta.id === report.id);
+      if (inx === -1) {
+        return;
+      }
+
+      this.events[inx].meta = report;
+      this.reportService.refreshView.next();
+    });
+  }
   
   private _handleNewReport(report: any): void {
     const calendarEvent = this._formatReportToCalendarEvent(report);
-
     // Poziv ka backend-u da se sacuva report
-    this.reportService.saveReport(calendarEvent.meta).subscribe(() => {
+    this.reportService.save(calendarEvent.meta).subscribe(() => {
       // ubacujes u niz koji se prikazuje
       this.events.push(calendarEvent);
       // osvezavas kalendar kako bi prikazao nove reporte
@@ -242,9 +254,13 @@ public CalendarView = CalendarView;
   }: CalendarEventTimesChangedEvent): void {
     event.start = newStart;
     event.end = newEnd;
-    // Promeniti boju report-a kada se odradi ovo.
     event.color = this._getColorForEvent(newStart);
-    this.reportService.refreshView.next();
+
+    event.meta.start_time = `${String(newStart.getHours()).padStart(2, '0')}:${String(newStart.getMinutes()).padStart(2, '0')}`;
+    event.meta.end_time = `${String(newEnd?.getHours()).padStart(2, '0')}:${String(newEnd?.getMinutes()).padStart(2, '0')}`;
+    event.meta.date = newStart.toISOString();
+
+    this.reportService.update(event.meta);
   }
 
   handleEvent(action: string, event: CalendarEvent): void {

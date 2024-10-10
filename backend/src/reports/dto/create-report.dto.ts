@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-// src/reports/schema/create-report.dto.ts
 import { IsString, IsNotEmpty, IsDateString } from 'class-validator';
 
 export class CreateReportDto {
@@ -20,12 +18,11 @@ export class CreateReportDto {
     package_number: string;
 
     @IsString()
-    @IsNotEmpty()
     comment: string;
 
     @IsDateString()
     @IsNotEmpty()
-    date: string;
+    date: Date;
 
     @IsString()
     @IsNotEmpty()
@@ -34,4 +31,10 @@ export class CreateReportDto {
     @IsString()
     @IsNotEmpty()
     end_time: string;
+
+    // @IsDateString()
+    // arrival_time: Date;
+
+    // @IsDateString()
+    // ready_time: Date;
 }

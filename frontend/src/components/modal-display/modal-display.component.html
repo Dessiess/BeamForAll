@@ -1,66 +1,63 @@
-<h2 mat-dialog-title>Form Details</h2>
+<h2 mat-dialog-title>Detalji dostave</h2>
 
 <div mat-dialog-content class="details-container">
   <div class="grid-container">
-    
-    <!-- Company Name -->
     <div class="detail-item">
-      <label>Company Name:</label>
+      <label>Ime kompanije:</label>
       <p>{{ report?.company_name }}</p>
     </div>
 
-    <!-- RN -->
     <div class="detail-item">
-      <label>RN:</label>
+      <label>Radni Nalog:</label>
       <p>{{ report?.rn }}</p>
     </div>
 
-    <!-- Material Type -->
     <div class="detail-item">
-      <label>Material Type:</label>
+      <label>Tip materijala:</label>
       <p>{{ report?.material_type }}</p>
     </div>
 
-    <!-- Package Number -->
     <div class="detail-item">
-      <label>Package Number:</label>
+      <label>Broj dostave:</label>
       <p>{{ report?.package_number }}</p>
     </div>
 
-    <!-- Comment -->
     <div class="detail-item">
-      <label>Comment:</label>
-      <p>{{ report?.comment || 'No comment provided' }}</p>
+      <label>Komentar:</label>
+      <p>{{ report?.comment || 'Nema komentara' }}</p>
     </div>
 
-    <!-- Date -->
     <div class="detail-item">
-      <label>Date:</label>
-      <p>{{ report?.date | date: 'longDate' }}</p>
+      <label>Datum dostave:</label>
+      <p>{{ report?.date | date : 'longDate' }}</p>
     </div>
 
-    <!-- Start Time -->
     <div class="detail-item">
-      <label>Start Time:</label>
+      <label>Ocekivani dolazak:</label>
       <p>{{ report?.start_time }}</p>
     </div>
 
-    <!-- End Time -->
     <div class="detail-item">
-      <label>End Time:</label>
+      <label>Ocekivan zavrsetak:</label>
       <p>{{ report?.end_time }}</p>
     </div>
 
-    <!-- Checkbox 1 -->
     <div class="detail-item">
-      <label>Option 1:</label>
-      <mat-checkbox (change)="onOption1Change($event)">Dolazak kamiona</mat-checkbox>
+      <label>Zavrsena priprema:</label>
+      <p>{{ (report?.ready_time | date : 'd.M.yyyy H:MM') || 'Nije pripremljeno' }}</p>
     </div>
 
-    <!-- Checkbox 2 -->
     <div class="detail-item">
-      <label>Option 2:</label>
-      <mat-checkbox (change)="onOption2Change($event)">Odlazak kamiona</mat-checkbox>
+      <label>Zabelezeni dolazak:</label>
+      <p>{{ (report?.arrival_time | date : 'd.M.yyyy H:MM') || 'Nije zabelezena dostava' }}</p>
+    </div>
+
+    <div class="detail-item">
+      <mat-checkbox (change)="readyTimeChange($event)" [checked]="!!report?.ready_time">Posiljka spremna</mat-checkbox>
+    </div>
+
+    <div class="detail-item">
+      <mat-checkbox (change)="arrivalTimeChange($event)" [checked]="!!report?.arrival_time">Odlazak kamiona</mat-checkbox>
     </div>
 
   </div>

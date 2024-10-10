@@ -23,8 +23,6 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class ModalDisplayComponent implements OnInit {
   report: any;
-  option1Timestamp: string | null = null; // Store timestamp for Option 1
-  option2Timestamp: string | null = null; // Store timestamp for Option 2
 
   constructor(
     private _reportService: ReportService,
@@ -33,34 +31,26 @@ export class ModalDisplayComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.data);
-    this.report = this.data?.meta;
+    const openReport = this.data?.meta;
+    this.report = {
+      ...openReport,
+      ready_time: !!openReport.ready_time ? openReport.ready_time : "",
+      arrival_time: !!openReport.arrival_time ? openReport.arrival_time : ""
+    };
   }
 
   onClose(): void {
     this._dialogRef.close(this.report);
   }
 
-  onOption1Change(event: MatCheckboxChange): void {
-    if (event.checked) {
-      this.option1Timestamp = new Date().toLocaleString(); // Save the current time
-      console.log('Option 1 checked at:', this.option1Timestamp);
-      // You can also save this to your report if needed
-      this.report.option1Time = this.option1Timestamp; 
-    } else {
-      this.option1Timestamp = null; // Reset if unchecked
-    }
+  readyTimeChange(event: MatCheckboxChange): void {
+    this.report.ready_time = !event.checked ? "" : new Date().toISOString();
+    this._reportService.update(this.report);
   }
 
-  onOption2Change(event: MatCheckboxChange): void {
-    if (event.checked) {
-      this.option2Timestamp = new Date().toLocaleString(); // Save the current time
-      console.log('Option 2 checked at:', this.option2Timestamp);
-      // Save to report if needed
-      this.report.option2Time = this.option2Timestamp; 
-    } else {
-      this.option2Timestamp = null; // Reset if unchecked
-    }
+  arrivalTimeChange(event: MatCheckboxChange): void {
+    this.report.arrival_time = !event.checked ? "" : new Date().toISOString();
+    this._reportService.update(this.report);
   }
 }
 

@@ -1,21 +1,27 @@
-/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Report } from './schema/report.schema';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { CreateReportDto } from './schema/create-report.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, UpdateResult } from 'typeorm';
+import { CreateReportDto } from './dto/create-report.dto';
+import { UpdateReportDto } from './dto/update-report.dto';
+import { Report } from './schema/report.entity';
 
 @Injectable()
 export class ReportsService {
-  constructor(@InjectModel(Report.name) private reportModel: Model<Report>) {}
+  constructor(
+    @InjectRepository(Report)
+    private _reportRepository: Repository<Report>,
+  ) {}
 
-  async createReport(reportData: any): Promise<Report> {
-    const newReport = new this.reportModel(reportData);
-    return await newReport.save();
+  async create(reportData: CreateReportDto): Promise<Report> {
+    const newReport = this._reportRepository.create(reportData as Partial<Report>);
+    return await this._reportRepository.save(newReport);
   }
 
-  async getReports(): Promise<Report[]> {
-    return await this.reportModel.find().exec();
+  async update(report: UpdateReportDto): Promise<UpdateResult> {
+    return await this._reportRepository.update(report.id, report as unknown as Partial<Report>);
+  }
+
+  async getAll(): Promise<Report[]> {
+    return await this._reportRepository.find();
   }
 }
