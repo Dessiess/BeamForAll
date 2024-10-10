@@ -1,42 +1,30 @@
 <div class="actions-container">
-  <div class="button-container">
-    <button
-      mat-button
-      class="action-button"
-      (click)="goToPrevious()"
-    >
+  <div class="button-container left-buttons">
+    <button mat-button class="action-button" (click)="goToPrevious()">
       Previous
     </button>
-    <button
-      mat-button
-      class="action-button"
-      (click)="goToCurrent()"
-    >
+    <button mat-button class="action-button" (click)="goToCurrent()">
       Current
     </button>
-    <button
-      mat-button
-      class="action-button"
-      (click)="goToNext()"
-    >
+    <button mat-button class="action-button" (click)="goToNext()">
       Next
     </button>
   </div>
 
-  <div class="button-container">
-    <button
-      mat-button
-      class="action-button"
-      (click)="changeViewToWeek()"
-    >
+  <div class="current-view">
+    <span *ngIf="currentView === CalendarView.Week">
+      {{ startDate | date: 'MMMM d, y' }} - {{ endDate | date: 'MMMM d, y' }}
+    </span>
+    <span *ngIf="currentView === CalendarView.Month">
+      {{ startDate | date: 'MMMM y' }}
+    </span>
+  </div>
+
+  <div class="button-container right-buttons">
+    <button mat-button class="action-button" (click)="changeViewToWeek()">
       Week
     </button>
-
-    <button
-      mat-button
-      class="action-button"
-      (click)="changeViewToMonth()"
-    >
+    <button mat-button class="action-button" (click)="changeViewToMonth()">
       Month
     </button>
   </div>

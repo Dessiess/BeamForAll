@@ -36,6 +36,10 @@ export class HomeComponent {
     { title: 'Event 1', start: new Date(), end: new Date(), color: { primary: '#e3bc08', secondary: '#FDF1BA' } },
     { title: 'Event 2', start: new Date(), end: new Date() }
   ];
+endDate: any;
+startDate: any;
+currentView: CalendarView = CalendarView.Week;
+public CalendarView = CalendarView;
 
   constructor(
     public reportService: ReportService,
@@ -50,14 +54,35 @@ export class HomeComponent {
     
     // salje se poziv ka backend-u 
     this._fetchEventsAndFormatForTheCalendar();
+    this.updateDateRange();
   }
 
   changeViewToWeek(): void {
     this.view = CalendarView.Week
+    this.currentView = CalendarView.Week;
+    this.updateDateRange();
   }
 
   changeViewToMonth(): void {
     this.view = CalendarView.Month
+    this.currentView = CalendarView.Month;
+    this.updateDateRange();
+  }
+
+  private updateDateRange(): void {
+    if (this.view === CalendarView.Week) {
+      const startOfWeek = this.startOfWeek(this.viewDate);
+      this.startDate = startOfWeek;
+      this.endDate = addWeeks(startOfWeek, 1);
+    } else {
+      this.startDate = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth(), 1);
+      this.endDate = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth() + 1, 0);
+    }
+  }
+  private startOfWeek(date: Date): Date {
+    const day = date.getDay();
+    const diff = date.getDate() - day; // adjust when day is sunday
+    return new Date(date.setDate(diff));
   }
 
   private _subscribeOnAddReportModalAction(): void {

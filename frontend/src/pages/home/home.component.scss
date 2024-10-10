@@ -4,13 +4,14 @@
 
 .actions-container {
     display: flex;
+    align-items: center;
     width: 100%; /* Take full width of the screen */
-    justify-content: flex-end;
+    justify-content: space-around;
 }
 
 .button-container {
     display: flex;
-    width: 15%;
+    width: 5%;
     justify-content: space-between; /* Distribute buttons evenly */
     padding: 8px; /* Add some padding to the container */
     background-color: #f9f9f9; /* Optional: light background color */
@@ -56,3 +57,11 @@
     cursor: pointer; /* Indicates the item is draggable */
     user-select: none; /* Prevents text selection */
   }
+
+.current-view {
+    margin: 0 10px; // Add some margin for spacing
+    color: #1c86ee; // Change text color to blue
+    font-size: 30px; // Adjust font size as needed
+    font-weight: bold; // Make the text bold
+    text-align: center; // Center the text
+}
