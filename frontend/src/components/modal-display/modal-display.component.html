@@ -54,18 +54,19 @@
     <!-- Checkbox 1 -->
     <div class="detail-item">
       <label>Option 1:</label>
-      <mat-checkbox>Checkbox 1 Label</mat-checkbox>
+      <mat-checkbox (change)="onOption1Change($event)">Dolazak kamiona</mat-checkbox>
     </div>
 
     <!-- Checkbox 2 -->
     <div class="detail-item">
       <label>Option 2:</label>
-      <mat-checkbox>Checkbox 2 Label</mat-checkbox>
+      <mat-checkbox (change)="onOption2Change($event)">Odlazak kamiona</mat-checkbox>
     </div>
 
   </div>
 </div>
 
 <mat-dialog-actions>
+  <button mat-button (click)="ngOnInit()">Save</button>
   <button mat-button (click)="onClose()">Cancel</button>
 </mat-dialog-actions>
