@@ -1,0 +1,58 @@
+.important-event {
+    border: '5px solid red'
+}
+
+.actions-container {
+    display: flex;
+    width: 100%; /* Take full width of the screen */
+    justify-content: flex-end;
+}
+
+.button-container {
+    display: flex;
+    width: 15%;
+    justify-content: space-between; /* Distribute buttons evenly */
+    padding: 8px; /* Add some padding to the container */
+    background-color: #f9f9f9; /* Optional: light background color */
+    border-radius: 4px; /* Optional: rounded corners */
+}
+
+.action-button {
+    cursor: pointer;
+    flex: 0 0 50px; /* Set max width to 50px and allow no growth */
+    margin: 0 4px; /* Small gap between buttons */
+    padding: 10px 5px; /* Vertical padding for better aesthetics */
+    background-color: #1e90ff; /* Button background color */
+    color: white; /* Button text color */
+    border-radius: 4px; /* Rounded corners for buttons */
+    border: none;
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+/* Hover effect */
+.action-button:hover {
+    background-color: #1c86ee; /* Darken on hover */
+}
+
+/* To remove margin from first and last button */
+.action-button:first-child {
+    margin-left: 0;
+}
+
+.action-button:last-child {
+    margin-right: 0;
+}
+
+.draggable-events {
+    margin-bottom: 20px;
+  }
+  
+  .draggable-event {
+    padding: 10px;
+    background-color: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    cursor: pointer; /* Indicates the item is draggable */
+    user-select: none; /* Prevents text selection */
+  }

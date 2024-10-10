@@ -1,0 +1,79 @@
+<div class="actions-container">
+  <div class="button-container">
+    <button
+      mat-button
+      class="action-button"
+      (click)="goToPrevious()"
+    >
+      Previous
+    </button>
+    <button
+      mat-button
+      class="action-button"
+      (click)="goToCurrent()"
+    >
+      Current
+    </button>
+    <button
+      mat-button
+      class="action-button"
+      (click)="goToNext()"
+    >
+      Next
+    </button>
+  </div>
+
+  <div class="button-container">
+    <button
+      mat-button
+      class="action-button"
+      (click)="changeViewToWeek()"
+    >
+      Week
+    </button>
+
+    <button
+      mat-button
+      class="action-button"
+      (click)="changeViewToMonth()"
+    >
+      Month
+    </button>
+  </div>
+</div>
+<!-- <div class="draggable-events">
+  <div 
+    class="draggable-event" 
+    draggable="true" 
+    (dragstart)="onDragStart($event, event)"
+    *ngFor="let event of outsideEvents">
+    {{ event.title }}
+  </div>
+</div> -->
+<div [ngSwitch]="view">
+  <mwl-calendar-month-view
+    *ngSwitchCase="'month'"
+    [viewDate]="viewDate"
+    [events]="events"
+    [locale]="locale"
+    [excludeDays]="[0]"
+    [refresh]="reportService.refreshView"
+  >
+  </mwl-calendar-month-view>
+  <mwl-calendar-week-view
+    *ngSwitchCase="'week'"
+    class="calendar-container"
+    [viewDate]="viewDate"
+    [events]="events"
+    [dayStartHour]="7"
+    [dayEndHour]="17"
+    [excludeDays]="[0]"
+    [refresh]="reportService.refreshView"
+    [locale]="locale"
+    (drop)="onDrop($event)"
+    (dragover)="allowDrop($event)"
+    (eventTimesChanged)="eventTimesChanged($event)"
+    (eventClicked)="handleEvent('Clicked', $event.event)"
+  >
+  </mwl-calendar-week-view>
+</div>

@@ -1,0 +1,47 @@
+.details-container {
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+p {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+mat-dialog-content {
+  padding-bottom: 20px;
+}
+
+mat-dialog-actions {
+  padding: 8px 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+button {
+  margin-left: 10px;
+}
+
+.mat-checkbox {
+  display: block;
+  margin: 10px 0;
+}

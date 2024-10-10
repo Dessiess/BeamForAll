@@ -1,0 +1,20 @@
+/* material-modal.component.css */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two columns */
+  gap: 16px; /* Gap between items */
+}
+
+.grid-item {
+  display: flex; /* Aligns form fields */
+  flex-direction: column; /* Stacks label and input */
+}
+
+.mat-form-field {
+  width: 100%; /* Full width for form fields */
+}
+
+.mat-dialog-actions {
+  width: 100%;
+  justify-content: center;
+}

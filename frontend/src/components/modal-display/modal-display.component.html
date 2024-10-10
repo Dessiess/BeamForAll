@@ -1,0 +1,71 @@
+<h2 mat-dialog-title>Form Details</h2>
+
+<div mat-dialog-content class="details-container">
+  <div class="grid-container">
+    
+    <!-- Company Name -->
+    <div class="detail-item">
+      <label>Company Name:</label>
+      <p>{{ report?.company_name }}</p>
+    </div>
+
+    <!-- RN -->
+    <div class="detail-item">
+      <label>RN:</label>
+      <p>{{ report?.rn }}</p>
+    </div>
+
+    <!-- Material Type -->
+    <div class="detail-item">
+      <label>Material Type:</label>
+      <p>{{ report?.material_type }}</p>
+    </div>
+
+    <!-- Package Number -->
+    <div class="detail-item">
+      <label>Package Number:</label>
+      <p>{{ report?.package_number }}</p>
+    </div>
+
+    <!-- Comment -->
+    <div class="detail-item">
+      <label>Comment:</label>
+      <p>{{ report?.comment || 'No comment provided' }}</p>
+    </div>
+
+    <!-- Date -->
+    <div class="detail-item">
+      <label>Date:</label>
+      <p>{{ report?.date | date: 'longDate' }}</p>
+    </div>
+
+    <!-- Start Time -->
+    <div class="detail-item">
+      <label>Start Time:</label>
+      <p>{{ report?.start_time }}</p>
+    </div>
+
+    <!-- End Time -->
+    <div class="detail-item">
+      <label>End Time:</label>
+      <p>{{ report?.end_time }}</p>
+    </div>
+
+    <!-- Checkbox 1 -->
+    <div class="detail-item">
+      <label>Option 1:</label>
+      <mat-checkbox>Checkbox 1 Label</mat-checkbox>
+    </div>
+
+    <!-- Checkbox 2 -->
+    <div class="detail-item">
+      <label>Option 2:</label>
+      <mat-checkbox>Checkbox 2 Label</mat-checkbox>
+    </div>
+
+  </div>
+</div>
+
+<mat-dialog-actions>
+  <button mat-button (click)="onClose()">Cancel</button>
+</mat-dialog-actions>

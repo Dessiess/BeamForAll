@@ -1,0 +1,88 @@
+<h2 mat-dialog-title>Material Form</h2>
+<mat-dialog-content>
+  <form [formGroup]="materialForm" (ngSubmit)="onSubmit()" class="form-grid">
+    <div class="grid-item">
+      <mat-form-field appearance="fill">
+        <mat-label>Company Name</mat-label>
+        <input matInput formControlName="company_name" required />
+        <mat-error *ngIf="materialForm.get('company_name')?.hasError('required')">
+          Company name is required.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="grid-item">
+      <mat-form-field appearance="fill">
+        <mat-label>RN</mat-label>
+        <input matInput formControlName="rn" required />
+        <mat-error *ngIf="materialForm.get('rn')?.hasError('required')">
+          RN is required.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="grid-item">
+      <mat-form-field appearance="fill">
+        <mat-label>Material Type</mat-label>
+        <input matInput formControlName="material_type" required />
+        <mat-error *ngIf="materialForm.get('material_type')?.hasError('required')">
+          Material type is required.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="grid-item">
+      <mat-form-field appearance="fill">
+        <mat-label>Package Number</mat-label>
+        <input matInput formControlName="package_number" required />
+        <mat-error *ngIf="materialForm.get('package_number')?.hasError('required')">
+          Package number is required.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="grid-item">
+      <mat-form-field appearance="fill">
+        <mat-label>Comment</mat-label>
+        <textarea matInput formControlName="comment"></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="grid-item">
+      <mat-form-field appearance="fill">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="date" required />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="materialForm.get('date')?.hasError('required')">
+          Date is required.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="grid-item">
+      <mat-form-field appearance="fill">
+        <mat-label>Start Time</mat-label>
+        <input matInput type="time" formControlName="start_time" required />
+        <mat-error *ngIf="materialForm.get('start_time')?.hasError('required')">
+          Start time is required.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="grid-item">
+      <mat-form-field appearance="fill">
+        <mat-label>End Time</mat-label>
+        <input matInput type="time" formControlName="end_time" required />
+        <mat-error *ngIf="materialForm.get('end_time')?.hasError('required')">
+          End time is required.
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+  
+  <mat-dialog-actions>
+    <button mat-button (click)="onClose()">Cancel</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="materialForm.invalid" (click)="onSubmit()">Submit</button>
+  </mat-dialog-actions>
+</mat-dialog-content>
