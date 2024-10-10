@@ -25,7 +25,7 @@ export class ModalDisplayComponent implements OnInit {
   report: any;
   option1Timestamp: string | null = null; // Store timestamp for Option 1
   option2Timestamp: string | null = null; // Store timestamp for Option 2
-
+  
   constructor(
     private _reportService: ReportService,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -38,7 +38,7 @@ export class ModalDisplayComponent implements OnInit {
   }
 
   onClose(): void {
-    this._dialogRef.close(this.report);
+    this._dialogRef.close();
   }
 
   onOption1Change(event: MatCheckboxChange): void {

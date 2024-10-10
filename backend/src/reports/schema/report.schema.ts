@@ -27,6 +27,12 @@ export class Report extends Document {
 
   @Prop({ required: true })
   end_time: string;
+
+  @Prop({ required: true })
+  option1time: string;
+
+  @Prop({ required: true })
+  option2time: string;
 }
 
 export const ReportSchema = SchemaFactory.createForClass(Report);

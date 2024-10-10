@@ -34,4 +34,12 @@ export class CreateReportDto {
     @IsString()
     @IsNotEmpty()
     end_time: string;
+
+    @IsString()
+    @IsNotEmpty()
+    option1time: string;
+
+    @IsString()
+    @IsNotEmpty()
+    option2time: string;
 }
