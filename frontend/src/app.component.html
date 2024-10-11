@@ -1,5 +1,5 @@
 <div class="main">
-    <div class="nav-bar">
+    <div *ngIf="showNavBar" class="nav-bar">
         <img src="beam.png" alt="BeamForAll" class="logo-icon" />
         <div class="add-button" (click)="openDialog()">Kreiraj dostavu</div>
     </div>
