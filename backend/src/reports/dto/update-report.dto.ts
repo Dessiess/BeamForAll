@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { IsString, IsDateString } from 'class-validator';
 
 export class UpdateReportDto {
