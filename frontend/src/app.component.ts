@@ -22,7 +22,6 @@ export class AppComponent {
   ngOnInit(): void {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        // Adjust this URL to match your login route path
         this.showNavBar = event.url !== '/login';
       }
     });
