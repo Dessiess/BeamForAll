@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Body, HttpException, HttpStatus, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, HttpException, HttpStatus, Put, Delete, Param } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { CreateReportDto } from './dto/create-report.dto';
 import { Report } from './schema/report.entity';
@@ -35,5 +35,10 @@ export class ReportsController {
     } catch (error) {
       throw new HttpException('Failed to retrieve reports', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+  
+  @Delete(':id')
+  async deleteReport(@Param('id') id: string): Promise<void> {
+    await this.reportsService.delete(id);
   }
 }

@@ -4,6 +4,7 @@ import { Observable, Subject } from "rxjs";
 
 @Injectable({providedIn: "root"})
 export class ReportService {
+
   public addReport = new Subject<any>();
   public updateReport = new Subject<any>();
   public refreshView = new Subject<void>();
@@ -24,5 +25,9 @@ export class ReportService {
 
   getReports(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
+  }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

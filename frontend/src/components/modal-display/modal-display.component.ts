@@ -42,6 +42,22 @@ export class ModalDisplayComponent implements OnInit {
     this._dialogRef.close();
   }
 
+  onDelete(): void {
+    if (this.report?.id) {
+      this._reportService.delete(this.report.id).subscribe(
+        () => {
+          console.log('Report deleted successfully.');
+          this._dialogRef.close({ deleted: true });
+        },
+        (error: any) => {
+          console.error('Error deleting report:', error);
+        }
+      );
+    } else {
+      console.error('No report ID found for deletion.');
+    }
+  }
+
   readyTimeChange(event: MatCheckboxChange): void {
     this.report.ready_time = !event.checked ? "" : new Date().toISOString();
     this._reportService.update(this.report);
