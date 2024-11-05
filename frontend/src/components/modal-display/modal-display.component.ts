@@ -6,6 +6,7 @@ import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { Router } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -27,6 +28,7 @@ export class ModalDisplayComponent implements OnInit {
     private _reportService: ReportService,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public _dialogRef: MatDialogRef<ModalDisplayComponent>,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -48,14 +50,24 @@ export class ModalDisplayComponent implements OnInit {
         () => {
           console.log('Report deleted successfully.');
           this._dialogRef.close({ deleted: true });
+          this.router.navigate([this.router.url]);
         },
         (error: any) => {
           console.error('Error deleting report:', error);
+          // Optionally, show an error message to the user
+          this.showErrorMessage('Failed to delete the report. Please try again later.');
+          this._dialogRef.close(); // Close dialog after error
         }
       );
     } else {
       console.error('No report ID found for deletion.');
+      this.showErrorMessage('No report ID found. Unable to delete.');
+      this._dialogRef.close(); // Close dialog if no ID is found
     }
+  }
+
+  showErrorMessage(arg0: string) {
+    throw new Error('Method not implemented.');
   }
 
   readyTimeChange(event: MatCheckboxChange): void {

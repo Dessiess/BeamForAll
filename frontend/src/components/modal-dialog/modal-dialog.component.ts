@@ -67,6 +67,7 @@ export class ModalDialogComponent implements OnInit {
   onSubmit(): void {
     if (this.materialForm.valid) {
       this._reportService.addReport.next({...this.materialForm.value, arrival_time: '', ready_time: ''});
+      this._dialogRef.close()
     }
   }
 
