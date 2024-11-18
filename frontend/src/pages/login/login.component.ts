@@ -14,6 +14,8 @@ import { AuthService } from '../../services/auth.service';
 })
 export class LoginComponent {
   loginForm!: FormGroup;
+  errorMessage: string = ''; // To store error messages
+  isLoading: boolean = false; // To handle loading state
 
   constructor(
     private fb: FormBuilder,
@@ -30,13 +32,22 @@ export class LoginComponent {
 
   onSubmit() {
     if (this.loginForm.valid) {
+      this.isLoading = true;
       const { username, password } = this.loginForm.value;
-      this._authService.login(username, password).subscribe({next: (resp) => {
-        console.log("resp: ", resp);
+      
+      this._authService.login(username, password).subscribe({
+        next: (resp) => {
+          console.log("resp: ", resp);
           this.router.navigate(['/home']);
-      }, error: (err) => {
-        console.log("error", err);
-      }});
+        },
+        error: (err) => {
+          console.error('Login error: ', err);
+          this.errorMessage = 'Invalid username or password'; // Set error message
+        },
+        complete: () => {
+        this.isLoading = false; // Turn off loading when the request is complete
+        }
+      });
     }
   }
 }

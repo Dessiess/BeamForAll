@@ -48,8 +48,8 @@
     </div>
 
     <div class="detail-item">
-      <label>Zabelezeni dolazak:</label>
-      <p>{{ (report?.arrival_time | date : 'd.M.yyyy H:MM') || 'Nije zabelezena dostava' }}</p>
+      <label>Zabelezeni odlazak:</label>
+      <p>{{ (report?.depature_time | date : 'd.M.yyyy H:MM') || 'Nije zabelezen odlazak' }}</p>
     </div>
 
     <div class="detail-item">
@@ -57,7 +57,7 @@
     </div>
 
     <div class="detail-item">
-      <mat-checkbox (change)="arrivalTimeChange($event)" [checked]="!!report?.arrival_time">Odlazak kamiona</mat-checkbox>
+      <mat-checkbox (change)="departurelTimeChange($event)" [checked]="!!report?.depature_time">Odlazak kamiona</mat-checkbox>
     </div>
 
   </div>
@@ -65,6 +65,6 @@
 
 <mat-dialog-actions>
   <button mat-button (click)="onDelete()">Delete</button>
-  <button mat-button (click)="ngOnInit()">Save</button>
+  <button mat-button (click)="onSave()">Save</button>
   <button mat-button (click)="onClose()">Cancel</button>
 </mat-dialog-actions>

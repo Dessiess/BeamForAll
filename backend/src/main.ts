@@ -8,7 +8,7 @@ async function bootstrap() {
   
   const allowedOrigins = [
     'http://localhost:4200',
-    'http://beamforall.s3-website.eu-central-1.amazonaws.com',
+   // 'http://beamforall.s3-website.eu-central-1.amazonaws.com',
   ];
 
   app.enableCors({

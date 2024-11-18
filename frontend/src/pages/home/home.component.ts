@@ -36,6 +36,7 @@ export class HomeComponent {
     { title: 'Event 1', start: new Date(), end: new Date(), color: { primary: '#e3bc08', secondary: '#FDF1BA' } },
     { title: 'Event 2', start: new Date(), end: new Date() }
   ];
+
 endDate: any;
 startDate: any;
 currentView: CalendarView = CalendarView.Week;

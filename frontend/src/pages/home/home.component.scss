@@ -1,5 +1,5 @@
 .important-event {
-    border: '5px solid red'
+    border: 5px solid red
 }
 
 .actions-container {
@@ -11,7 +11,8 @@
 
 .button-container {
     display: flex;
-    width: 5%;
+    width: auto;
+    max-width: 100px;
     justify-content: space-between; /* Distribute buttons evenly */
     padding: 8px; /* Add some padding to the container */
     background-color: #f9f9f9; /* Optional: light background color */
@@ -35,6 +36,10 @@
     background-color: #1c86ee; /* Darken on hover */
 }
 
+.action-button:focus {
+    outline: 2px solid #1c86ee;
+}
+
 /* To remove margin from first and last button */
 .action-button:first-child {
     margin-left: 0;
@@ -51,7 +56,7 @@
   .draggable-event {
     padding: 15px;
     display: inline-block; 
-    width: 20%;
+    width: 10%;
     background-color: #e3f2fd;
     border: 1px solid #90caf9;
     border-radius: 4px;
@@ -61,10 +66,19 @@
     user-select: none; /* Prevents text selection */
   }
 
+  .draggable-event:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease-in-out;
+}
+
 .current-view {
-    margin: 0 10px; // Add some margin for spacing
+    margin: 20px 10px; // Add some margin for spacing
     color: #1c86ee; // Change text color to blue
     font-size: 30px; // Adjust font size as needed
     font-weight: bold; // Make the text bold
     text-align: center; // Center the text
 }
+
+.cal-hour, .cal-time {
+    display: none; /* Ensure you are not hiding these elements */
+  }

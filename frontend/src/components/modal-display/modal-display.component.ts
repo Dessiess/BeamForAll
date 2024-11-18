@@ -35,12 +35,18 @@ export class ModalDisplayComponent implements OnInit {
     const openReport = this.data?.meta;
     this.report = {
       ...openReport,
-      ready_time: !!openReport.ready_time ? openReport.ready_time : "",
-      arrival_time: !!openReport.arrival_time ? openReport.arrival_time : ""
+      ready_time: openReport?.ready_time || "",
+      departure_time: openReport?.departure_time || ""
     };
   }
 
   onClose(): void {
+    this._dialogRef.close();
+  }
+
+  onSave(): void {
+    console.log('Report to save:', this.report); // Log the current report data
+    this._reportService.update(this.report); // Save the report
     this._dialogRef.close();
   }
 
@@ -75,8 +81,8 @@ export class ModalDisplayComponent implements OnInit {
     this._reportService.update(this.report);
   }
 
-  arrivalTimeChange(event: MatCheckboxChange): void {
-    this.report.arrival_time = !event.checked ? "" : new Date().toISOString();
+  departurelTimeChange(event: MatCheckboxChange): void {
+    this.report.departure_time = !event.checked ? "" : new Date().toISOString();
     this._reportService.update(this.report);
   }
 }
