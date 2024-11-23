@@ -44,9 +44,9 @@ export class RegisterComponent {
   onSubmit() {
     if (this.registerForm.valid) {
       this.isLoading = true;
-      const { username, email, password } = this.registerForm.value;
+      const { username, password, confirmPassword } = this.registerForm.value;
 
-      this._authService.register(username, email, password).subscribe({
+      this._authService.register(username, password, confirmPassword).subscribe({
         next: (resp: any) => {
           console.log('Registration success:', resp);
           this.router.navigate(['/login']); // Redirect to login page after successful registration

@@ -44,12 +44,12 @@
 
     <div class="detail-item">
       <label>Zavrsena priprema:</label>
-      <p>{{ (report?.ready_time | date : 'd.M.yyyy H:MM') || 'Nije pripremljeno' }}</p>
+      <p>{{ (report?.ready_time | date : 'd.M.yyyy H:mm') || 'Nije pripremljeno' }}</p>
     </div>
 
     <div class="detail-item">
       <label>Zabelezeni odlazak:</label>
-      <p>{{ (report?.depature_time | date : 'd.M.yyyy H:MM') || 'Nije zabelezen odlazak' }}</p>
+      <p>{{ (report?.departure_time | date : 'd.M.yyyy H:mm') || 'Nije zabelezen odlazak' }}</p>
     </div>
 
     <div class="detail-item">
@@ -57,14 +57,14 @@
     </div>
 
     <div class="detail-item">
-      <mat-checkbox (change)="departurelTimeChange($event)" [checked]="!!report?.depature_time">Odlazak kamiona</mat-checkbox>
+      <mat-checkbox (change)="departureTimeChange($event)" [checked]="!!report?.departure_time">Odlazak kamiona</mat-checkbox>
     </div>
 
   </div>
 </div>
 
 <mat-dialog-actions>
-  <button mat-button (click)="onDelete()">Delete</button>
-  <button mat-button (click)="onSave()">Save</button>
-  <button mat-button (click)="onClose()">Cancel</button>
+  <button mat-button (click)="onDelete()" aria-label=>Delete</button>
+  <button mat-button (click)="onSave()" aria-label=>Save</button>
+  <button mat-button (click)="onClose()" aria-label=>Cancel</button>
 </mat-dialog-actions>

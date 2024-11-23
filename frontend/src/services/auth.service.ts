@@ -23,9 +23,9 @@ export class AuthService {
     );
   }
 
-  register(username: string, email: string, password: string): Observable<any> {
+  register(username: string, password: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const body = { username, email, password };
+    const body = { username, password };
 
     return this.http.post(this.registerUrl, body, { headers }).pipe(
       catchError((error) => {

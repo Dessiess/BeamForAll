@@ -10,7 +10,7 @@ import { DeleteResult } from 'typeorm';
 @Injectable()
 export class ReportsService {
   constructor(
-    @InjectRepository(Report)
+    @InjectRepository(Report, 'reportsConnection')
     private _reportRepository: Repository<Report>,
   ) {}
 

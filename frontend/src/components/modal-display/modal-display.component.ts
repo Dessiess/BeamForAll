@@ -24,6 +24,7 @@ import { Router } from '@angular/router';
 })
 export class ModalDisplayComponent implements OnInit {
   report: any;
+isLoading: unknown;
   constructor(
     private _reportService: ReportService,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -81,7 +82,7 @@ export class ModalDisplayComponent implements OnInit {
     this._reportService.update(this.report);
   }
 
-  departurelTimeChange(event: MatCheckboxChange): void {
+  departureTimeChange(event: MatCheckboxChange): void {
     this.report.departure_time = !event.checked ? "" : new Date().toISOString();
     this._reportService.update(this.report);
   }

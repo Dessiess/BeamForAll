@@ -1,14 +1,19 @@
 /* eslint-disable prettier/prettier */
-// create-user.dto.ts
+import { IsString, MinLength } from 'class-validator';
+
 export class CreateUserDto {
-    username: string;
-    email: string;
-    password: string;
-  }
-  
-  // login-user.dto.ts
-  export class LoginUserDto {
-    username: string;
-    password: string;
-  }
-  
+  @IsString()
+  username: string;
+
+  @IsString()
+  @MinLength(6, { message: 'Password must be at least 6 characters long.' })
+  password: string;
+}
+
+export class LoginUserDto {
+  @IsString()
+  username: string;
+
+  @IsString()
+  password: string;
+}
