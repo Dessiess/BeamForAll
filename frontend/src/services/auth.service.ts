@@ -1,15 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
+
 
 @Injectable()
 export class AuthService {
+  
 
  // private loginUrl = 'http://ec2-18-184-238-241.eu-central-1.compute.amazonaws.com/auth/login';
   private loginUrl = 'http://localhost:3000/auth/login';
   private registerUrl = 'http://localhost:3000/auth/register';
 
   constructor(private http: HttpClient) { }
+
+  getUsername(): string {
+    return localStorage.getItem('username') || 'Gost';  // Default to "Gost" (Guest) if no username is found
+  }
 
   login(username: string, password: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -19,6 +25,12 @@ export class AuthService {
       catchError((error) => {
         console.error('Login error:', error);
          return throwError(() => new Error('Login failed. Please check your credentials and try again.'));
+      }),
+      tap((response: any) => {
+        // Assuming the backend sends back the username upon successful login
+        if (response && response.username) {
+          localStorage.setItem('username', response.username);  // Store username in localStorage
+        }
       })
     );
   }
@@ -34,4 +46,16 @@ export class AuthService {
       })
     );
   }
+
+  saveLoginData(username: string, token: string): void {
+    localStorage.setItem('username', username);  // Store username in localStorage
+    localStorage.setItem('token', token);        // Store auth token in localStorage
+  }
+
+  // Remove login data (logout method)
+  logout(): void {
+    localStorage.removeItem('username');
+    localStorage.removeItem('token');
+  }
+
 } 

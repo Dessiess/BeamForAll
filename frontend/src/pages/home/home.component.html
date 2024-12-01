@@ -11,6 +11,10 @@
     </button>
   </div>
 
+  <div class="welcome-banner">
+    <span>Dobrodošli, {{ username }}</span>
+  </div>
+
   <div class="current-view">
     <span *ngIf="currentView === CalendarView.Week">
       {{ startDate | date: 'MMMM d, y' }} - {{ endDate | date: 'MMMM d, y' }}

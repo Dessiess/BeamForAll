@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ModalDisplayComponent } from '../../components/modal-display/modal-display.component';
 import { firstValueFrom } from 'rxjs';
 import { colors } from './constants/colors.constant';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -23,6 +24,7 @@ import { colors } from './constants/colors.constant';
     { provide: DateAdapter, useFactory: adapterFactory },
     { provide: CalendarEventTitleFormatter, useClass: CalendarEventTitleFormatter },
     { provide: CalendarDateFormatter, useClass: CustomDateFormatter },
+    AuthService
   ],
 })
 export class HomeComponent {
@@ -30,6 +32,7 @@ export class HomeComponent {
   public viewDate: Date = new Date();
   public actions: CalendarEventAction[] = [];
   public events: CalendarEvent[] = [];
+  public username: string = '';
   view: CalendarView = CalendarView.Week;
 
   outsideEvents = [
@@ -45,9 +48,11 @@ public CalendarView = CalendarView;
   constructor(
     public reportService: ReportService,
     private _dialog: MatDialog,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
+    this.username = this.authService.getUsername(); // Get the username
     // ovo se prvo poziva u komponenti kad se inicijalizuje prikaz
     // radi se "subscribe na event" kada se iz modala klikne na submit, onda se ovde dobije taj objekat koji smo uneli
     // u ovom trenutku se nista ne desava u ovoj metodi, vec si se samo subscribe na event koji ce se desiti u buducnosti

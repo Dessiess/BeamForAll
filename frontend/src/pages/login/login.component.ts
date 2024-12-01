@@ -37,7 +37,10 @@ export class LoginComponent {
       
       this._authService.login(username, password).subscribe({
         next: (resp) => {
-          console.log("resp: ", resp);
+          // Save the username and token in localStorage
+          this._authService.saveLoginData(username, resp.token);
+
+          // Navigate to the home page after login
           this.router.navigate(['/home']);
         },
         error: (err) => {
@@ -45,7 +48,7 @@ export class LoginComponent {
           this.errorMessage = 'Invalid username or password'; // Set error message
         },
         complete: () => {
-        this.isLoading = false; // Turn off loading when the request is complete
+          this.isLoading = false; // Turn off loading when the request is complete
         }
       });
     }

@@ -28,7 +28,6 @@ export class RegisterComponent {
       {
         username: ['', Validators.required],
         password: ['', [Validators.required, Validators.minLength(6)]],
-        confirmPassword: ['', Validators.required],
       },
       { validators: this.passwordMatchValidator }
     );
@@ -44,9 +43,9 @@ export class RegisterComponent {
   onSubmit() {
     if (this.registerForm.valid) {
       this.isLoading = true;
-      const { username, password, confirmPassword } = this.registerForm.value;
+      const { username, password,} = this.registerForm.value;
 
-      this._authService.register(username, password, confirmPassword).subscribe({
+      this._authService.register(username, password,).subscribe({
         next: (resp: any) => {
           console.log('Registration success:', resp);
           this.router.navigate(['/login']); // Redirect to login page after successful registration

@@ -54,7 +54,7 @@ export class AuthService {
     }
 
     // Generate a JWT token (replace with actual token generation logic)
-    const token = this.jwtService.sign({ id: user.id, username: user.username });
+    const token = this.jwtService.sign({ id: user.id, username: user.username }, { expiresIn: '8h' });
 
     return { message: 'Login successful!', token };
   }

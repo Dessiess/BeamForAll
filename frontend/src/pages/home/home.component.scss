@@ -81,4 +81,14 @@
 
 .cal-hour, .cal-time {
     display: none; /* Ensure you are not hiding these elements */
-  }
+}
+
+.welcome-banner {
+    position: absolute; /* Or relative based on layout */
+    top: 20px;
+    left: 10px;
+    color: #ffffff; /* Adjust for visibility */
+    font-size: 20px;
+    font-weight: bold;
+    z-index: 10; /* Ensure it appears above other elements */
+}
