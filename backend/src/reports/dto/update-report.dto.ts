@@ -30,8 +30,8 @@ export class UpdateReportDto {
     end_time?: string;
 
     @IsString()
-    arrival_time?: string;
+    ready_time?: string;
 
     @IsString()
-    ready_time?: string;
+    departure_time?: string;
 }

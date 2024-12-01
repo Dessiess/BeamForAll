@@ -73,7 +73,7 @@ isLoading: unknown;
     }
   }
 
-  showErrorMessage(arg0: string) {
+  showErrorMessage(_arg0: string) {
     throw new Error('Method not implemented.');
   }
 

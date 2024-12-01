@@ -31,8 +31,8 @@ export class Report {
   end_time: string;
 
   @Column({ type: 'timestamp', nullable: true })
-  arrival_time: Date;
+  ready_time: Date;
 
   @Column({ type: 'timestamp', nullable: true })
-  ready_time: Date;
+  departure_time: Date;
 }

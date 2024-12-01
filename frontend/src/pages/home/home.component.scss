@@ -15,7 +15,7 @@
     max-width: 100px;
     justify-content: space-between; /* Distribute buttons evenly */
     padding: 8px; /* Add some padding to the container */
-    background-color: #f9f9f9; /* Optional: light background color */
+    background-color: #ffffff; /* Optional: light background color */
     border-radius: 4px; /* Optional: rounded corners */
 }
 
@@ -85,9 +85,9 @@
 
 .welcome-banner {
     position: absolute; /* Or relative based on layout */
-    top: 20px;
+    top: 24px;
     left: 10px;
-    color: #ffffff; /* Adjust for visibility */
+    color: #1c86ee; /* Adjust for visibility */
     font-size: 20px;
     font-weight: bold;
     z-index: 10; /* Ensure it appears above other elements */
