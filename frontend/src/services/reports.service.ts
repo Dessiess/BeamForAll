@@ -17,10 +17,8 @@ export class ReportService {
     return this.http.post(`${this.apiUrl}`, report);
   }
 
-  update(report: any): void {
-    this.http.put(`${this.apiUrl}`, report).subscribe(() => {
-      this.updateReport.next(report);
-    });
+  update(report: any, id: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}`, report);
   }
 
   getReports(): Observable<any[]> {

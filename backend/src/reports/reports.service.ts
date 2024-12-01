@@ -15,12 +15,12 @@ export class ReportsService {
   ) {}
 
   async create(reportData: CreateReportDto): Promise<Report> {
-    const newReport = this._reportRepository.create(reportData as Partial<Report>);
+    const newReport = this._reportRepository.create(reportData);
     return await this._reportRepository.save(newReport);
   }
 
   async update(report: UpdateReportDto): Promise<UpdateResult> {
-    return await this._reportRepository.update(report.id, report as unknown as Partial<Report>);
+    return await this._reportRepository.update(report.id, report);
   }
 
   async getAll(): Promise<Report[]> {

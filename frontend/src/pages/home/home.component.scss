@@ -49,28 +49,6 @@
     margin-right: 0;
 }
 
-.draggable-events {
-    margin-bottom: 10px;
-  }
-  
-  .draggable-event {
-    padding: 15px;
-    display: inline-block; 
-    width: 10%;
-    background-color: #e3f2fd;
-    border: 1px solid #90caf9;
-    border-radius: 4px;
-    margin-bottom: 5px;
-    margin: 0 10px;
-    cursor: pointer; /* Indicates the item is draggable */
-    user-select: none; /* Prevents text selection */
-  }
-
-  .draggable-event:hover {
-    transform: scale(1.05);
-    transition: transform 0.2s ease-in-out;
-}
-
 .current-view {
     margin: 20px 10px; // Add some margin for spacing
     color: #1c86ee; // Change text color to blue
@@ -92,3 +70,42 @@
     font-weight: bold;
     z-index: 10; /* Ensure it appears above other elements */
 }
+.last-week-events-bar {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    margin-bottom: 10px;
+    gap: 12px;  // Adds space between items automatically
+    padding: 5px 0;
+    align-items: center;
+  }
+  
+  .event-item {
+    padding: 15px;
+    display: inline-block; 
+    min-width: 150px;  // Minimum width for readability
+    background-color: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    cursor: grab; /* Indicates the item is draggable */
+    user-select: none; /* Prevents text selection */
+    text-align: center; /* Centers the text */
+    flex-shrink: 0;  // Prevents shrinking of the items
+    box-sizing: border-box;  // Ensures padding doesn't affect width
+    transition: transform 0.2s ease-in-out, background-color 0.2s ease;
+  }
+  
+  .event-item:hover {
+    background-color: #bbdefb;  // Lighter blue on hover
+    transform: scale(1.07);
+  }
+  
+  .last-week-events-bar:hover {
+    transform: scale(1);
+  }
+
+  .event-item:active {
+    cursor: grabbing;
+  }
+  

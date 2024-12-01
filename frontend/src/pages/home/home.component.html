@@ -33,15 +33,15 @@
     </button>
   </div>
 </div>
-<div class="draggable-events">
+<div class="last-week-events-bar">
   <div 
-    class="draggable-event" 
+    *ngFor="let event of lastWeekEvents" 
+    class="event-item" 
     draggable="true" 
-    (dragstart)="onDragStart($event, event)"
-    *ngFor="let event of outsideEvents">
-    {{ event.title }}
+    (dragstart)="onDragStart($event, event)">
+    {{ event.company_name }} 
   </div>
-</div>
+</div>  
 <div [ngSwitch]="view">
   <mwl-calendar-month-view
     *ngSwitchCase="'month'"
@@ -69,4 +69,5 @@
     (eventClicked)="handleEvent('Clicked', $event.event)"
   >
   </mwl-calendar-week-view>
+  
 </div>

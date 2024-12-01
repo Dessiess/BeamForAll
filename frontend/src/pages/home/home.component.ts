@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { CalendarA11y, CalendarDateFormatter, CalendarEvent, CalendarEventAction, CalendarEventTimesChangedEvent, CalendarEventTitleFormatter, CalendarModule, CalendarUtils, CalendarView, DateAdapter, DateFormatterParams } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
-import { startOfToday, addWeeks, subWeeks, subMonths, addMonths } from 'date-fns';
+import { startOfToday, addWeeks, subWeeks, subMonths, addMonths, endOfWeek } from 'date-fns';
 import { EventColor } from 'calendar-utils';
 import { CustomDateFormatter } from './providers/custom-date.provider';
 import { ReportService } from '../../services/reports.service';
@@ -33,6 +33,7 @@ export class HomeComponent {
   public actions: CalendarEventAction[] = [];
   public events: CalendarEvent[] = [];
   public username: string = '';
+  public lastWeekEvents: any[] = [];
   view: CalendarView = CalendarView.Week;
 
   outsideEvents = [
@@ -58,6 +59,8 @@ public CalendarView = CalendarView;
     // u ovom trenutku se nista ne desava u ovoj metodi, vec si se samo subscribe na event koji ce se desiti u buducnosti
     this._subscribeOnAddReportModalAction(); 
     this._subscribeOnUpdateReportModalAction();
+    this._fetchEventsFromLastWeek();
+
     
     // salje se poziv ka backend-u 
     this._fetchEventsAndFormatForTheCalendar();
@@ -114,6 +117,7 @@ public CalendarView = CalendarView;
   
   private _handleNewReport(report: any): void {
     const calendarEvent = this._formatReportToCalendarEvent(report);
+    calendarEvent.draggable = true;
     // Poziv ka backend-u da se sacuva report
     this.reportService.save(calendarEvent.meta).subscribe(() => {
       // ubacujes u niz koji se prikazuje
@@ -121,6 +125,30 @@ public CalendarView = CalendarView;
       // osvezavas kalendar kako bi prikazao nove reporte
       this.reportService.refreshView.next();
     });
+  }
+
+  private _populateEventBar(events: any[]): void {
+    this.lastWeekEvents = events;
+  }
+
+  private async _fetchEventsFromLastWeek(): Promise<void> {
+    // Calculate the start and end date of last week
+    const lastWeekStart = subWeeks(startOfToday(), 1);
+    const lastWeekEnd = endOfWeek(lastWeekStart);
+  
+    // Fetch reports from backend
+    const reports: any[] = await firstValueFrom(
+      this.reportService.getReports()
+    );
+  
+    // Filter the reports from last week
+    const lastWeekEvents = reports.filter(report => {
+      const eventDate = new Date(report.date);
+      return ( eventDate >= lastWeekStart && eventDate <= lastWeekEnd && !report.departure_time);
+    });
+  
+    this.events = lastWeekEvents.map(report => this._formatReportToCalendarEvent(report));
+    this._populateEventBar(lastWeekEvents);
   }
 
   private async _fetchEventsAndFormatForTheCalendar(): Promise<void> {
@@ -135,51 +163,67 @@ public CalendarView = CalendarView;
   }
 
   onDragStart(event: DragEvent, calendarEvent: CalendarEvent): void {
-    event.dataTransfer?.setData('text/plain', JSON.stringify(calendarEvent));
+    event.dataTransfer?.setData('eventData', JSON.stringify(calendarEvent));
   }
 
   onDrop(event: DragEvent): void {
     event.preventDefault();
-    const data = event.dataTransfer?.getData('text/plain');
-    if (data) {
-      const calendarEvent = JSON.parse(data);
-
-      // Get the drop coordinates
-      const dropX = event.clientX;
-      const dropY = event.clientY;
-
-      // Use the calendar element to determine the drop position
-      const calendarElement = document.querySelector('.calendar-container'); // Adjust this selector to your calendar's class or ID
-      const rect = calendarElement?.getBoundingClientRect();
-
-      if (rect) {
-        // Calculate the date based on the drop position
-        const dropXRelative = dropX - rect.left;
-        const dropYRelative = dropY - rect.top;
-
-        // Assuming your calendar has a time slot height of 60 pixels for one hour
-        const timeSlotHeight = 60;
-        const hoursDropped = Math.floor(dropYRelative / timeSlotHeight);
-        const minutesDropped = ((dropYRelative % timeSlotHeight) / timeSlotHeight) * 60;
-
-        // Create start date based on the drop position
-        const startDate = new Date(this.viewDate); // Use the current view date
-        startDate.setHours(startDate.getHours() + hoursDropped, startDate.getMinutes() + Math.round(minutesDropped));
-
-        // Create the end date based on your event duration
-        const endDate = new Date(startDate);
-        endDate.setHours(endDate.getHours() + 1); // Set duration (for example, 1 hour)
-
-        this.events.push({
-          ...calendarEvent,
-          start: startDate,
-          end: endDate,
+    const eventData = event.dataTransfer?.getData('eventData');
+    
+    if (eventData) {
+      const draggedEvent = JSON.parse(eventData);
+  
+      const calendarElement = document.querySelector('.calendar-container');
+      if (!calendarElement) {
+        console.error('Calendar container not found');
+        return;
+      }
+  
+      const calendarRect = calendarElement.getBoundingClientRect();
+      if (!calendarRect) {
+        console.error('Unable to get calendar container bounding rect');
+        return;
+      }
+  
+      const dropX = event.clientX - calendarRect.left;
+      const dropY = event.clientY - calendarRect.top;
+  
+      const timeSlotHeight = 60;
+      const hoursDropped = Math.floor(dropY / timeSlotHeight);
+      const minutesDropped = ((dropY % timeSlotHeight) / timeSlotHeight) * 60;
+  
+      const newStartDate = new Date(this.viewDate);
+      newStartDate.setHours(newStartDate.getHours() + hoursDropped);
+      newStartDate.setMinutes(newStartDate.getMinutes() + Math.round(minutesDropped));
+  
+      const newEndDate = new Date(newStartDate);
+      newEndDate.setHours(newEndDate.getHours() + 1);
+  
+      draggedEvent.start = newStartDate;
+      draggedEvent.end = newEndDate;
+  
+      const eventIndex = this.events.findIndex(event => event.id === draggedEvent.id);
+  
+      if (eventIndex !== -1) {
+        this.events[eventIndex] = { ...draggedEvent };
+  
+        const updatedEvent = { 
+          ...draggedEvent.meta, 
+          date: newStartDate.toISOString(),
+          start_time: `${String(newStartDate.getHours()).padStart(2, '0')}:${String(newStartDate.getMinutes()).padStart(2, '0')}`,
+          end_time: `${String(newEndDate.getHours()).padStart(2, '0')}:${String(newEndDate.getMinutes()).padStart(2, '0')}` 
+        };
+  
+        // Now the update() method includes the ID in the URL
+        this.reportService.update(updatedEvent, draggedEvent.id).subscribe((response: any) => {
+          console.log('Event updated successfully:', response);
         });
       }
-
-      console.log(this.events);
     }
   }
+  
+  
+
 
   allowDrop(event: DragEvent): void {
     event.preventDefault(); // Necessary to allow the drop
@@ -269,7 +313,9 @@ public CalendarView = CalendarView;
     event.meta.end_time = `${String(newEnd?.getHours()).padStart(2, '0')}:${String(newEnd?.getMinutes()).padStart(2, '0')}`;
     event.meta.date = newStart.toISOString();
 
-    this.reportService.update(event.meta);
+    this.reportService.update(event.meta, event.meta.id).subscribe((response) => {
+      console.log('Event updated successfully:', response);
+    });
   }
 
   handleEvent(action: string, event: CalendarEvent): void {

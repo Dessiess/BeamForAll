@@ -47,7 +47,7 @@ isLoading: unknown;
 
   onSave(): void {
     console.log('Report to save:', this.report); // Log the current report data
-    this._reportService.update(this.report); // Save the report
+    this._reportService.update(this.report, this.report.id); // Save the report
     this._dialogRef.close();
   }
 
@@ -79,12 +79,12 @@ isLoading: unknown;
 
   readyTimeChange(event: MatCheckboxChange): void {
     this.report.ready_time = !event.checked ? "" : new Date().toISOString();
-    this._reportService.update(this.report);
+    this._reportService.update(this.report, this.report.id);
   }
 
   departureTimeChange(event: MatCheckboxChange): void {
     this.report.departure_time = !event.checked ? "" : new Date().toISOString();
-    this._reportService.update(this.report);
+    this._reportService.update(this.report, this.report.id);
   }
 }
 
