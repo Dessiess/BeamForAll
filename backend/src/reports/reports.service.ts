@@ -19,7 +19,7 @@ export class ReportsService {
     return await this._reportRepository.save(newReport);
   }
 
-  async update(report: UpdateReportDto): Promise<UpdateResult> {
+  async update(id: string, report: UpdateReportDto): Promise<UpdateResult> {
     return await this._reportRepository.update(report.id, report);
   }
 

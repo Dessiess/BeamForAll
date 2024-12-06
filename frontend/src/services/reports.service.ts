@@ -18,7 +18,7 @@ export class ReportService {
   }
 
   update(report: any, id: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}`, report);
+    return this.http.put(`${this.apiUrl}/${id}`, report);
   }
 
   getReports(): Observable<any[]> {

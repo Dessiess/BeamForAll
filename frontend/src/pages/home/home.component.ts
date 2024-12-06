@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { CalendarA11y, CalendarDateFormatter, CalendarEvent, CalendarEventAction, CalendarEventTimesChangedEvent, CalendarEventTitleFormatter, CalendarModule, CalendarUtils, CalendarView, DateAdapter, DateFormatterParams } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
-import { startOfToday, addWeeks, subWeeks, subMonths, addMonths, endOfWeek } from 'date-fns';
+import { startOfToday, addWeeks, subWeeks, subMonths, addMonths, endOfWeek, isValid } from 'date-fns';
 import { EventColor } from 'calendar-utils';
 import { CustomDateFormatter } from './providers/custom-date.provider';
 import { ReportService } from '../../services/reports.service';
@@ -132,24 +132,37 @@ public CalendarView = CalendarView;
   }
 
   private async _fetchEventsFromLastWeek(): Promise<void> {
-    // Calculate the start and end date of last week
-    const lastWeekStart = subWeeks(startOfToday(), 1);
-    const lastWeekEnd = endOfWeek(lastWeekStart);
+    try {
+      // Calculate the start and end dates of the last week
+      const lastWeekStart = this.startOfWeek(subWeeks(startOfToday(), 1));
+      const lastWeekEnd = endOfWeek(lastWeekStart);
   
-    // Fetch reports from backend
-    const reports: any[] = await firstValueFrom(
-      this.reportService.getReports()
-    );
+      // Fetch reports from the backend
+      const reports: any[] = await firstValueFrom(this.reportService.getReports());
   
-    // Filter the reports from last week
-    const lastWeekEvents = reports.filter(report => {
-      const eventDate = new Date(report.date);
-      return ( eventDate >= lastWeekStart && eventDate <= lastWeekEnd && !report.departure_time);
-    });
+      // Filter and format the reports
+      const lastWeekEvents = reports
+        .filter(report => {
+          const eventDate = new Date(report.date);
+          return (
+            isValid(eventDate) &&
+            eventDate >= lastWeekStart &&
+            eventDate <= lastWeekEnd &&
+            !report.departure_time
+          );
+        })
+        .map(report => this._formatReportToCalendarEvent(report));
   
-    this.events = lastWeekEvents.map(report => this._formatReportToCalendarEvent(report));
-    this._populateEventBar(lastWeekEvents);
+      // Assign events to the calendar and populate the event bar
+      this.events = lastWeekEvents;
+      this._populateEventBar(lastWeekEvents);
+  
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+      // Handle the error, e.g., show a message to the user
+    }
   }
+  
 
   private async _fetchEventsAndFormatForTheCalendar(): Promise<void> {
     // tehnika hvatanja response-a sa backend-a
@@ -162,14 +175,15 @@ public CalendarView = CalendarView;
     this.events = reports.map(report => this._formatReportToCalendarEvent(report));
   }
 
-  onDragStart(event: DragEvent, calendarEvent: CalendarEvent): void {
+  onDragStart(event: DragEvent, calendarEvent: any): void {
+    console.log('Dragging event:', calendarEvent);
     event.dataTransfer?.setData('eventData', JSON.stringify(calendarEvent));
   }
 
   onDrop(event: DragEvent): void {
     event.preventDefault();
+  
     const eventData = event.dataTransfer?.getData('eventData');
-    
     if (eventData) {
       const draggedEvent = JSON.parse(eventData);
   
@@ -180,41 +194,45 @@ public CalendarView = CalendarView;
       }
   
       const calendarRect = calendarElement.getBoundingClientRect();
-      if (!calendarRect) {
-        console.error('Unable to get calendar container bounding rect');
-        return;
-      }
-  
       const dropX = event.clientX - calendarRect.left;
       const dropY = event.clientY - calendarRect.top;
   
+      // Calculate the drop time based on Y position
       const timeSlotHeight = 60;
       const hoursDropped = Math.floor(dropY / timeSlotHeight);
-      const minutesDropped = ((dropY % timeSlotHeight) / timeSlotHeight) * 60;
+      let minutesDropped = ((dropY % timeSlotHeight) / timeSlotHeight) * 60;
+  
+      // Round minutes to either 00 or 30
+      minutesDropped = minutesDropped < 30 ? 0 : 30;
+  
+      // Restrict the time to between 07:00 and 17:00
+      const startHour = Math.max(7, Math.min(17, hoursDropped));  // Clamp hours between 7 and 17
+      const startMinutes = Math.min(59, Math.round(minutesDropped));
   
       const newStartDate = new Date(this.viewDate);
-      newStartDate.setHours(newStartDate.getHours() + hoursDropped);
-      newStartDate.setMinutes(newStartDate.getMinutes() + Math.round(minutesDropped));
+      newStartDate.setDate(newStartDate.getDate() + (Math.floor(dropX / calendarRect.width * 7)));
+      newStartDate.setHours(startHour);
+      newStartDate.setMinutes(startMinutes);
   
-      const newEndDate = new Date(newStartDate);
-      newEndDate.setHours(newEndDate.getHours() + 1);
+      // Adjust for timezone and calculate end time (assuming 1-hour duration)
+      const correctStartTime = new Date(newStartDate.getTime() - newStartDate.getTimezoneOffset() * 60000);
+      const correctEndTime = new Date(correctStartTime.getTime() + 60 * 60 * 1000);
   
-      draggedEvent.start = newStartDate;
-      draggedEvent.end = newEndDate;
+      // Update the dragged event with the new start and end times
+      draggedEvent.start = correctStartTime;
+      draggedEvent.end = correctEndTime;
   
       const eventIndex = this.events.findIndex(event => event.id === draggedEvent.id);
-  
       if (eventIndex !== -1) {
         this.events[eventIndex] = { ...draggedEvent };
   
-        const updatedEvent = { 
-          ...draggedEvent.meta, 
-          date: newStartDate.toISOString(),
-          start_time: `${String(newStartDate.getHours()).padStart(2, '0')}:${String(newStartDate.getMinutes()).padStart(2, '0')}`,
-          end_time: `${String(newEndDate.getHours()).padStart(2, '0')}:${String(newEndDate.getMinutes()).padStart(2, '0')}` 
+        const updatedEvent = {
+          ...draggedEvent.meta,
+          date: correctStartTime.toISOString(),
+          start_time: `${String(correctStartTime.getHours()).padStart(2, '0')}:${String(correctStartTime.getMinutes()).padStart(2, '0')}`,
+          end_time: `${String(correctEndTime.getHours()).padStart(2, '0')}:${String(correctEndTime.getMinutes()).padStart(2, '0')}`
         };
   
-        // Now the update() method includes the ID in the URL
         this.reportService.update(updatedEvent, draggedEvent.id).subscribe((response: any) => {
           console.log('Event updated successfully:', response);
         });
@@ -222,23 +240,25 @@ public CalendarView = CalendarView;
     }
   }
   
-  
-
 
   allowDrop(event: DragEvent): void {
     event.preventDefault(); // Necessary to allow the drop
   }
 
   private _formatReportToCalendarEvent(report: any): CalendarEvent {
-    const { date, start_time, end_time, company_name } = report;
+    const { date, start_time, end_time, company_name, id } = report;
   
     const startDate = new Date(date);
     const [startHours, startMinutes] = start_time.split(':').map(Number);
     const [endHours, endMinutes] = end_time.split(':').map(Number);
-    
-    startDate.setHours(startHours, startMinutes, 0, 0);
+  
+    // Round minutes to 00 or 30
+    const roundedStartMinutes = startMinutes < 30 ? 0 : 30;
+    const roundedEndMinutes = endMinutes < 30 ? 0 : 30;
+  
+    startDate.setHours(startHours, roundedStartMinutes, 0, 0);
     const endDate = new Date(date);
-    endDate.setHours(endHours, endMinutes, 0, 0);
+    endDate.setHours(endHours, roundedEndMinutes, 0, 0);
   
     return {
       start: startDate,
@@ -251,9 +271,10 @@ public CalendarView = CalendarView;
         afterEnd: true,
       },
       draggable: true,
-      meta: report
+      meta: { ...report, id },
     };
   }
+  
   
   private _getColorForEvent(startDate: Date): EventColor {
     const currentDate = new Date();
@@ -262,17 +283,16 @@ public CalendarView = CalendarView;
     startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
     const startOfYesterday = new Date(startOfToday);
     startOfYesterday.setDate(startOfYesterday.getDate() - 1);
-  
+
     if (startDate < currentDate) {
-      return colors['red'];
-    } 
-    else if (startDate >= currentDate && startDate < startOfTomorrow) {
-      return colors['yellow'];
-    } 
-    else {
-      return colors['green'];
+        return colors['red'];
+    } else if (startDate >= currentDate && startDate < startOfTomorrow) {
+        return colors['yellow'];
+    } else {
+        return colors['green'];
     }
-  }
+}
+
 
   goToPrevious(): void {
     this.viewDate = this.view === CalendarView.Week

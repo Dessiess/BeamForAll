@@ -22,7 +22,7 @@ export class Report {
   comment: string;
 
   @Column({ type: 'date', nullable: false })
-  date: Date;
+  date: string;
 
   @Column({ type: 'varchar', length: 50, nullable: false })
   start_time: string;
@@ -31,8 +31,8 @@ export class Report {
   end_time: string;
 
   @Column({ type: 'timestamp', nullable: true })
-  ready_time: Date;
+  ready_time: string;
 
   @Column({ type: 'timestamp', nullable: true })
-  departure_time: Date;
+  departure_time: string;
 }

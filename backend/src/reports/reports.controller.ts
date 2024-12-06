@@ -19,14 +19,14 @@ export class ReportsController {
     }
   }
 
-  @Put()
-  async update(@Body() updateReportDto: UpdateReportDto): Promise<any> {
-    try {
-      return await this.reportsService.update(updateReportDto);
-    } catch (error) {
-      throw new HttpException("Failed to retrieve reports! " + error.message, HttpStatus.BAD_REQUEST);
-    }
+  @Put(':id')
+async update(@Param('id') id: string, @Body() updateReportDto: UpdateReportDto): Promise<any> {
+  try {
+    return await this.reportsService.update(id, updateReportDto);
+  } catch (error) {
+    throw new HttpException("Failed to retrieve reports! " + error.message, HttpStatus.BAD_REQUEST);
   }
+}
 
   @Get()
   async findAll(): Promise<any[]> {

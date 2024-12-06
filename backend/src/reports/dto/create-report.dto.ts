@@ -23,7 +23,7 @@ export class CreateReportDto {
 
     @IsDateString()
     @IsNotEmpty()
-    date: Date;
+    date: string;
 
     @IsString()
     @IsNotEmpty()

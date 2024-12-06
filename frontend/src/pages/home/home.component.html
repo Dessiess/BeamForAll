@@ -39,7 +39,7 @@
     class="event-item" 
     draggable="true" 
     (dragstart)="onDragStart($event, event)">
-    {{ event.company_name }} 
+    {{ event.meta.company_name || event.company_name }} 
   </div>
 </div>  
 <div [ngSwitch]="view">

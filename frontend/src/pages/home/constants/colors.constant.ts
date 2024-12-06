@@ -17,4 +17,8 @@ export const colors: Record<string, EventColor> = {
         primary: '#28a745',
         secondary: '#C8E6C9',
     },
+    silver: {
+        primary: '#c0c0c0', 
+        secondary: '#f2f2f2', 
+    },
 };

@@ -41,14 +41,27 @@ isLoading: unknown;
     };
   }
 
-  onClose(): void {
-    this._dialogRef.close();
+  onClose(deleted = false): void {
+    this._dialogRef.close({ deleted });
   }
 
+  isSaving = false;
+
   onSave(): void {
-    console.log('Report to save:', this.report); // Log the current report data
-    this._reportService.update(this.report, this.report.id); // Save the report
-    this._dialogRef.close();
+    this.isSaving = true;
+    this._reportService.update(this.report, this.report.id).subscribe(
+      (response) => {
+        this.isSaving = false;
+        this._dialogRef.close();
+  
+        // Reload the entire page after saving
+        window.location.reload();
+      },
+      (error) => {
+        this.isSaving = false;
+        this.showErrorMessage('Failed to save the report.');
+      }
+    );
   }
 
   onDelete(): void {
@@ -57,7 +70,9 @@ isLoading: unknown;
         () => {
           console.log('Report deleted successfully.');
           this._dialogRef.close({ deleted: true });
-          this.router.navigate([this.router.url]);
+  
+          // Reload the entire page after successful deletion
+          window.location.reload();  // This will reload the page
         },
         (error: any) => {
           console.error('Error deleting report:', error);
@@ -78,13 +93,19 @@ isLoading: unknown;
   }
 
   readyTimeChange(event: MatCheckboxChange): void {
-    this.report.ready_time = !event.checked ? "" : new Date().toISOString();
-    this._reportService.update(this.report, this.report.id);
+    const newValue = event.checked ? new Date().toISOString() : "";
+    if (this.report.ready_time !== newValue) {
+      this.report.ready_time = newValue;
+      this._reportService.update(this.report, this.report.id);
+    }
   }
-
+  
   departureTimeChange(event: MatCheckboxChange): void {
-    this.report.departure_time = !event.checked ? "" : new Date().toISOString();
-    this._reportService.update(this.report, this.report.id);
+    const newValue = event.checked ? new Date().toISOString() : "";
+    if (this.report.departure_time !== newValue) {
+      this.report.departure_time = newValue;
+      this._reportService.update(this.report, this.report.id);
+    }
   }
 }
 
