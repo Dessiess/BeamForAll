@@ -4,7 +4,6 @@
 import { Controller, Get, Post, Body, HttpException, HttpStatus, Put, Delete, Param } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { CreateReportDto } from './dto/create-report.dto';
-import { Report } from './schema/report.entity';
 import { UpdateReportDto } from './dto/update-report.dto';
 @Controller('reports')
 export class ReportsController {

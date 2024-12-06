@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { CalendarA11y, CalendarDateFormatter, CalendarEvent, CalendarEventAction, CalendarEventTimesChangedEvent, CalendarEventTitleFormatter, CalendarModule, CalendarUtils, CalendarView, DateAdapter, DateFormatterParams } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
@@ -45,7 +45,6 @@ endDate: any;
 startDate: any;
 currentView: CalendarView = CalendarView.Week;
 public CalendarView = CalendarView;
-
   constructor(
     public reportService: ReportService,
     private _dialog: MatDialog,
@@ -59,8 +58,6 @@ public CalendarView = CalendarView;
     // u ovom trenutku se nista ne desava u ovoj metodi, vec si se samo subscribe na event koji ce se desiti u buducnosti
     this._subscribeOnAddReportModalAction(); 
     this._subscribeOnUpdateReportModalAction();
-    this._fetchEventsFromLastWeek();
-
     
     // salje se poziv ka backend-u 
     this._fetchEventsAndFormatForTheCalendar();
@@ -84,11 +81,13 @@ public CalendarView = CalendarView;
       const startOfWeek = this.startOfWeek(this.viewDate);
       this.startDate = startOfWeek;
       this.endDate = addWeeks(startOfWeek, 1);
-    } else {
-      this.startDate = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth(), 1);
-      this.endDate = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth() + 1, 0);
+      return;
     }
+
+    this.startDate = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth(), 1);
+    this.endDate = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth() + 1, 0);
   }
+
   private startOfWeek(date: Date): Date {
     const day = date.getDay();
     const diff = date.getDate() - day; // adjust when day is sunday
@@ -136,25 +135,21 @@ public CalendarView = CalendarView;
       // Calculate the start and end dates of the last week
       const lastWeekStart = this.startOfWeek(subWeeks(startOfToday(), 1));
       const lastWeekEnd = endOfWeek(lastWeekStart);
-  
-      // Fetch reports from the backend
-      const reports: any[] = await firstValueFrom(this.reportService.getReports());
-  
+
       // Filter and format the reports
-      const lastWeekEvents = reports
+      const lastWeekEvents = this.events
         .filter(report => {
-          const eventDate = new Date(report.date);
+          const eventDate = new Date(report.meta.date);
           return (
             isValid(eventDate) &&
             eventDate >= lastWeekStart &&
             eventDate <= lastWeekEnd &&
-            !report.departure_time
+            !report.meta.departure_time
           );
         })
-        .map(report => this._formatReportToCalendarEvent(report));
+        .map(report => this._formatReportToCalendarEvent(report.meta));
   
       // Assign events to the calendar and populate the event bar
-      this.events = lastWeekEvents;
       this._populateEventBar(lastWeekEvents);
   
     } catch (error) {
@@ -163,7 +158,6 @@ public CalendarView = CalendarView;
     }
   }
   
-
   private async _fetchEventsAndFormatForTheCalendar(): Promise<void> {
     // tehnika hvatanja response-a sa backend-a
     const reports: any[] = await firstValueFrom(
@@ -173,10 +167,11 @@ public CalendarView = CalendarView;
 
     // smestanje u events svih dovucenih report-a sa backend-a
     this.events = reports.map(report => this._formatReportToCalendarEvent(report));
+    this._fetchEventsFromLastWeek();
   }
 
   onDragStart(event: DragEvent, calendarEvent: any): void {
-    console.log('Dragging event:', calendarEvent);
+    // console.log('Dragging event:', calendarEvent);
     event.dataTransfer?.setData('eventData', JSON.stringify(calendarEvent));
   }
 
@@ -186,61 +181,61 @@ public CalendarView = CalendarView;
     const eventData = event.dataTransfer?.getData('eventData');
     if (eventData) {
       const draggedEvent = JSON.parse(eventData);
-  
-      const calendarElement = document.querySelector('.calendar-container');
+    
+      if (!event.target || !(event.target instanceof HTMLElement)) {
+        return;
+      }
+    
+      const slotHeightPx = 30;
+      const startHour = 7;
+      const slotsPerHour = 2;
+    
+      const calendarElement = (event.target as HTMLElement).closest('.cal-day-column');
       if (!calendarElement) {
         console.error('Calendar container not found');
         return;
       }
-  
+    
       const calendarRect = calendarElement.getBoundingClientRect();
-      const dropX = event.clientX - calendarRect.left;
       const dropY = event.clientY - calendarRect.top;
+    
+      const totalSlots = Math.floor(dropY / slotHeightPx);
+      const droppedHour = startHour + Math.floor(totalSlots / slotsPerHour);
+      const droppedMinutes = (totalSlots % slotsPerHour) * 30;
+    
+      const droppedTime = new Date();
+      droppedTime.setHours(droppedHour, droppedMinutes, 0, 0);
   
-      // Calculate the drop time based on Y position
-      const timeSlotHeight = 60;
-      const hoursDropped = Math.floor(dropY / timeSlotHeight);
-      let minutesDropped = ((dropY % timeSlotHeight) / timeSlotHeight) * 60;
+      const startParts = draggedEvent.meta.start_time.split(':').map(Number);
+      const endParts = draggedEvent.meta.end_time.split(':').map(Number);
   
-      // Round minutes to either 00 or 30
-      minutesDropped = minutesDropped < 30 ? 0 : 30;
+      const startDuration = startParts[0] * 3600000 + startParts[1] * 60000 + (startParts[2] || 0) * 1000;
+      const endDuration = endParts[0] * 3600000 + endParts[1] * 60000 + (endParts[2] || 0) * 1000;
+      const durationMs = endDuration - startDuration;
   
-      // Restrict the time to between 07:00 and 17:00
-      const startHour = Math.max(7, Math.min(17, hoursDropped));  // Clamp hours between 7 and 17
-      const startMinutes = Math.min(59, Math.round(minutesDropped));
+      const newEndTime = new Date(droppedTime.getTime() + durationMs);
   
-      const newStartDate = new Date(this.viewDate);
-      newStartDate.setDate(newStartDate.getDate() + (Math.floor(dropX / calendarRect.width * 7)));
-      newStartDate.setHours(startHour);
-      newStartDate.setMinutes(startMinutes);
+      draggedEvent.start = droppedTime.toLocaleTimeString();
+      draggedEvent.end = newEndTime.toLocaleTimeString();
   
-      // Adjust for timezone and calculate end time (assuming 1-hour duration)
-      const correctStartTime = new Date(newStartDate.getTime() - newStartDate.getTimezoneOffset() * 60000);
-      const correctEndTime = new Date(correctStartTime.getTime() + 60 * 60 * 1000);
-  
-      // Update the dragged event with the new start and end times
-      draggedEvent.start = correctStartTime;
-      draggedEvent.end = correctEndTime;
-  
-      const eventIndex = this.events.findIndex(event => event.id === draggedEvent.id);
+      const eventIndex = this.events.findIndex(event => event.meta.id === draggedEvent.meta.id);
       if (eventIndex !== -1) {
         this.events[eventIndex] = { ...draggedEvent };
   
         const updatedEvent = {
           ...draggedEvent.meta,
-          date: correctStartTime.toISOString(),
-          start_time: `${String(correctStartTime.getHours()).padStart(2, '0')}:${String(correctStartTime.getMinutes()).padStart(2, '0')}`,
-          end_time: `${String(correctEndTime.getHours()).padStart(2, '0')}:${String(correctEndTime.getMinutes()).padStart(2, '0')}`
+          date: droppedTime.toISOString(),
+          start_time: `${String(droppedTime.getHours()).padStart(2, '0')}:${String(droppedTime.getMinutes()).padStart(2, '0')}`,
+          end_time: `${String(newEndTime.getHours()).padStart(2, '0')}:${String(newEndTime.getMinutes()).padStart(2, '0')}`
         };
   
-        this.reportService.update(updatedEvent, draggedEvent.id).subscribe((response: any) => {
+        this.reportService.update(updatedEvent, draggedEvent.meta.id).subscribe((response: any) => {
           console.log('Event updated successfully:', response);
         });
       }
     }
   }
   
-
   allowDrop(event: DragEvent): void {
     event.preventDefault(); // Necessary to allow the drop
   }
@@ -274,7 +269,6 @@ public CalendarView = CalendarView;
       meta: { ...report, id },
     };
   }
-  
   
   private _getColorForEvent(startDate: Date): EventColor {
     const currentDate = new Date();

@@ -53,14 +53,14 @@ export class ModalDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.materialForm = this._formBuilder.group({
-      company_name: ['', Validators.required],
-      rn: ['', Validators.required],
-      material_type: ['', Validators.required],
-      package_number: ['', Validators.required],
-      comment: [''],
-      date: ['', Validators.required],
-      start_time: ['', Validators.required],
-      end_time: ['', Validators.required]
+      company_name: ['3223', Validators.required],
+      rn: ['132', Validators.required],
+      material_type: ['33', Validators.required],
+      package_number: ['33', Validators.required],
+      comment: ['33'],
+      date: ['2024-11-28', Validators.required],
+      start_time: ['13:36:24', Validators.required],
+      end_time: ['14:32:22', Validators.required]
     });
   }
 
