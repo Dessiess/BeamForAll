@@ -54,8 +54,8 @@ isLoading: unknown;
         this.isSaving = false;
         this._dialogRef.close();
   
-        // Reload the entire page after saving
-        window.location.reload();
+        // refresh on save
+        this._reportService.refreshView.next();
       },
       (error) => {
         this.isSaving = false;
@@ -71,8 +71,8 @@ isLoading: unknown;
           console.log('Report deleted successfully.');
           this._dialogRef.close({ deleted: true });
   
-          // Reload the entire page after successful deletion
-          window.location.reload();  // This will reload the page
+          // refresh on delete 
+          this._reportService.refreshView.next();
         },
         (error: any) => {
           console.error('Error deleting report:', error);

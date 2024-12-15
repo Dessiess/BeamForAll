@@ -58,6 +58,11 @@ public CalendarView = CalendarView;
     // u ovom trenutku se nista ne desava u ovoj metodi, vec si se samo subscribe na event koji ce se desiti u buducnosti
     this._subscribeOnAddReportModalAction(); 
     this._subscribeOnUpdateReportModalAction();
+
+    //kad odradis delete refreshuje tako sto fecuje sve iz baze
+    this.reportService.refreshView.subscribe(() => {
+      this._fetchEventsAndFormatForTheCalendar();
+    });
     
     // salje se poziv ka backend-u 
     this._fetchEventsAndFormatForTheCalendar();
@@ -90,7 +95,7 @@ public CalendarView = CalendarView;
 
   private startOfWeek(date: Date): Date {
     const day = date.getDay();
-    const diff = date.getDate() - day; // adjust when day is sunday
+    const diff = date.getDate() - day; 
     return new Date(date.setDate(diff));
   }
 
@@ -132,11 +137,11 @@ public CalendarView = CalendarView;
 
   private async _fetchEventsFromLastWeek(): Promise<void> {
     try {
-      // Calculate the start and end dates of the last week
+      // pocetni i krajnji dan za proslu nedelju
       const lastWeekStart = this.startOfWeek(subWeeks(startOfToday(), 1));
       const lastWeekEnd = endOfWeek(lastWeekStart);
 
-      // Filter and format the reports
+      
       const lastWeekEvents = this.events
         .filter(report => {
           const eventDate = new Date(report.meta.date);
@@ -149,12 +154,12 @@ public CalendarView = CalendarView;
         })
         .map(report => this._formatReportToCalendarEvent(report.meta));
   
-      // Assign events to the calendar and populate the event bar
+      
       this._populateEventBar(lastWeekEvents);
   
     } catch (error) {
       console.error('Error fetching reports:', error);
-      // Handle the error, e.g., show a message to the user
+      
     }
   }
   
@@ -171,7 +176,7 @@ public CalendarView = CalendarView;
   }
 
   onDragStart(event: DragEvent, calendarEvent: any): void {
-    // console.log('Dragging event:', calendarEvent);
+    
     event.dataTransfer?.setData('eventData', JSON.stringify(calendarEvent));
   }
 
@@ -181,30 +186,58 @@ public CalendarView = CalendarView;
     const eventData = event.dataTransfer?.getData('eventData');
     if (eventData) {
       const draggedEvent = JSON.parse(eventData);
-    
+  
       if (!event.target || !(event.target instanceof HTMLElement)) {
         return;
       }
-    
+  
       const slotHeightPx = 30;
       const startHour = 7;
       const slotsPerHour = 2;
-    
+  
       const calendarElement = (event.target as HTMLElement).closest('.cal-day-column');
       if (!calendarElement) {
         console.error('Calendar container not found');
         return;
       }
-    
+  
+      // Determine the column index from the DOM element
+      const columnIndex = Array.from(calendarElement.parentNode?.children || []).indexOf(calendarElement);
+      if (columnIndex === -1) {
+        console.error('Unable to determine column index');
+        return;
+      }
+  
+      // Define excluded days (e.g., Sundays)
+      const excludeDays = [0]; // Sundays
+  
+      // Calculate the start of the week or current view
+      const currentDate = new Date(this.viewDate);
+      const startOfCurrentView = this.view === CalendarView.Week
+        ? this.startOfWeek(currentDate)
+        : new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  
+      // Calculate the dropped date while skipping excluded days
+      let dayCounter = 0;
+      let droppedDate = new Date(startOfCurrentView);
+  
+      for (let i = 0; i <= columnIndex; i++) {
+        while (excludeDays.includes(droppedDate.getDay())) {
+          droppedDate.setDate(droppedDate.getDate() + 1);
+        }
+        if (i < columnIndex) {
+          droppedDate.setDate(droppedDate.getDate() + 1);
+        }
+      }
+  
       const calendarRect = calendarElement.getBoundingClientRect();
       const dropY = event.clientY - calendarRect.top;
-    
+  
       const totalSlots = Math.floor(dropY / slotHeightPx);
       const droppedHour = startHour + Math.floor(totalSlots / slotsPerHour);
       const droppedMinutes = (totalSlots % slotsPerHour) * 30;
-    
-      const droppedTime = new Date();
-      droppedTime.setHours(droppedHour, droppedMinutes, 0, 0);
+  
+      droppedDate.setHours(droppedHour, droppedMinutes, 0, 0);
   
       const startParts = draggedEvent.meta.start_time.split(':').map(Number);
       const endParts = draggedEvent.meta.end_time.split(':').map(Number);
@@ -213,9 +246,9 @@ public CalendarView = CalendarView;
       const endDuration = endParts[0] * 3600000 + endParts[1] * 60000 + (endParts[2] || 0) * 1000;
       const durationMs = endDuration - startDuration;
   
-      const newEndTime = new Date(droppedTime.getTime() + durationMs);
+      const newEndTime = new Date(droppedDate.getTime() + durationMs);
   
-      draggedEvent.start = droppedTime.toLocaleTimeString();
+      draggedEvent.start = droppedDate.toLocaleTimeString();
       draggedEvent.end = newEndTime.toLocaleTimeString();
   
       const eventIndex = this.events.findIndex(event => event.meta.id === draggedEvent.meta.id);
@@ -224,9 +257,9 @@ public CalendarView = CalendarView;
   
         const updatedEvent = {
           ...draggedEvent.meta,
-          date: droppedTime.toISOString(),
-          start_time: `${String(droppedTime.getHours()).padStart(2, '0')}:${String(droppedTime.getMinutes()).padStart(2, '0')}`,
-          end_time: `${String(newEndTime.getHours()).padStart(2, '0')}:${String(newEndTime.getMinutes()).padStart(2, '0')}`
+          date: droppedDate.toISOString().split('T')[0],
+          start_time: `${String(droppedDate.getHours()).padStart(2, '0')}:${String(droppedDate.getMinutes()).padStart(2, '0')}`,
+          end_time: `${String(newEndTime.getHours()).padStart(2, '0')}:${String(newEndTime.getMinutes()).padStart(2, '0')}`,
         };
   
         this.reportService.update(updatedEvent, draggedEvent.meta.id).subscribe((response: any) => {
@@ -235,6 +268,9 @@ public CalendarView = CalendarView;
       }
     }
   }
+  
+  
+  
   
   allowDrop(event: DragEvent): void {
     event.preventDefault(); // Necessary to allow the drop

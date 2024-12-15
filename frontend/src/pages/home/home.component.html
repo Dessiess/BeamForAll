@@ -53,21 +53,26 @@
   >
   </mwl-calendar-month-view>
   <mwl-calendar-week-view
-    *ngSwitchCase="'week'"
-    class="calendar-container"
-    [viewDate]="viewDate"
-    [events]="events"
-    [dayStartHour]="7"
-    [dayEndHour]="17"
-    [excludeDays]="[0]"
-    [hourSegments]="2"
-    [refresh]="reportService.refreshView"
-    [locale]="locale"
-    (drop)="onDrop($event)"
-    (dragover)="allowDrop($event)"
-    (eventTimesChanged)="eventTimesChanged($event)"
-    (eventClicked)="handleEvent('Clicked', $event.event)"
-  >
-  </mwl-calendar-week-view>
+  *ngSwitchCase="'week'"
+  class="calendar-container"
+  [viewDate]="viewDate"
+  [events]="events"
+  [dayStartHour]="7"
+  [dayEndHour]="17"
+  [excludeDays]="[0]"
+  [hourSegments]="2"
+  [refresh]="reportService.refreshView"
+  [locale]="locale"
+  (drop)="onDrop($event)"
+  (dragover)="allowDrop($event)"
+  (eventTimesChanged)="eventTimesChanged($event)"
+  (eventClicked)="handleEvent('Clicked', $event.event)"
+>
+  <ng-template #columnTemplate let-day="day">
+    <div class="cal-day-column" [attr.data-date]="day.date | date: 'yyyy-MM-dd'">
+      <!-- Custom content here -->
+    </div>
+  </ng-template>
+</mwl-calendar-week-view>
   
 </div>
