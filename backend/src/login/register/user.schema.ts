@@ -1,12 +1,16 @@
-/* eslint-disable prettier/prettier */
-import { Schema, Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-export interface User extends Document {
+@Schema()
+export class User extends Document {
+  @Prop({ required: true, unique: true })
   username: string;
+
+  @Prop({ required: true })
   password: string;
+
+  @Prop({ default: Date.now })
+  createdAt: Date;
 }
 
-export const UserSchema = new Schema<User>({
-  username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-});
+export const UserSchema = SchemaFactory.createForClass(User);

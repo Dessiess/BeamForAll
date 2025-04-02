@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, Observable, tap, throwError } from 'rxjs';
+import { Router } from '@angular/router';
 
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
   
 
@@ -11,7 +14,7 @@ export class AuthService {
   private loginUrl = 'http://localhost:3000/auth/login';
   private registerUrl = 'http://localhost:3000/auth/register';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
   getUsername(): string {
     return localStorage.getItem('username') || 'Gost';  // Default to "Gost" (Guest) if no username is found
@@ -28,8 +31,8 @@ export class AuthService {
       }),
       tap((response: any) => {
         // Assuming the backend sends back the username upon successful login
-        if (response && response.username) {
-          localStorage.setItem('username', response.username);  // Store username in localStorage
+        if (response?.token && response?.username) {
+          this.saveLoginData(response.token, response.username);  // Store username in localStorage
         }
       })
     );
@@ -40,6 +43,11 @@ export class AuthService {
     const body = { username, password };
 
     return this.http.post(this.registerUrl, body, { headers }).pipe(
+      tap((response: any) => {
+        if (response?.token) {
+          this.saveLoginData(response.token, username); // Store token and username
+        }
+      }),
       catchError((error) => {
         console.error('Registration error:', error);
         return throwError(() => new Error('Registration failed. Please try again.'));
@@ -56,6 +64,11 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('username');
     localStorage.removeItem('token');
+    this.router.navigate(['/login']);
+  }
+
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('token'); // Checks if token exists
   }
 
 } 

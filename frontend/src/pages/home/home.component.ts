@@ -13,19 +13,18 @@ import { colors } from './constants/colors.constant';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  imports: [CalendarModule, CommonModule],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
-  providers: [
-    CalendarA11y,
-    CalendarUtils,
-    { provide: DateAdapter, useFactory: adapterFactory },
-    { provide: CalendarEventTitleFormatter, useClass: CalendarEventTitleFormatter },
-    { provide: CalendarDateFormatter, useClass: CustomDateFormatter },
-    AuthService
-  ],
+    selector: 'app-home',
+    imports: [CalendarModule, CommonModule],
+    templateUrl: './home.component.html',
+    styleUrl: './home.component.scss',
+    providers: [
+        CalendarA11y,
+        CalendarUtils,
+        { provide: DateAdapter, useFactory: adapterFactory },
+        { provide: CalendarEventTitleFormatter, useClass: CalendarEventTitleFormatter },
+        { provide: CalendarDateFormatter, useClass: CustomDateFormatter },
+        AuthService
+    ]
 })
 export class HomeComponent {
   public locale: string = 'sr-Latn';
@@ -173,6 +172,10 @@ public CalendarView = CalendarView;
     // smestanje u events svih dovucenih report-a sa backend-a
     this.events = reports.map(report => this._formatReportToCalendarEvent(report));
     this._fetchEventsFromLastWeek();
+  }
+
+  logout(): void {
+    this.authService.logout(); // Call the AuthService logout method
   }
 
   onDragStart(event: DragEvent, calendarEvent: any): void {

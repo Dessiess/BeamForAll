@@ -5,12 +5,11 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'login',
-  standalone: true,
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
-  imports: [CommonModule, ReactiveFormsModule], 
-  providers: [AuthService]
+    selector: 'login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
+    imports: [CommonModule, ReactiveFormsModule],
+    providers: [AuthService]
 })
 export class LoginComponent {
   loginForm!: FormGroup;

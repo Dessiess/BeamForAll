@@ -22,25 +22,24 @@ export const MY_DATE_FORMATS = {
 };
 
 @Component({
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatDialogModule
-  ],
-  providers: [
-    { provide: DateAdapter, useClass: NativeDateAdapter },
-    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }, // Optional
-    { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, // Optional for locale
-  ],
-  selector: 'app-modal-dialog',
-  styleUrls: ['./modal-dialog.component.scss'],
-  templateUrl: './modal-dialog.component.html',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatFormFieldModule,
+        MatButtonModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatDialogModule
+    ],
+    providers: [
+        { provide: DateAdapter, useClass: NativeDateAdapter },
+        { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }, // Optional
+        { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, // Optional for locale
+    ],
+    selector: 'app-modal-dialog',
+    styleUrls: ['./modal-dialog.component.scss'],
+    templateUrl: './modal-dialog.component.html'
 })
 export class ModalDialogComponent implements OnInit {
   materialForm!: FormGroup;

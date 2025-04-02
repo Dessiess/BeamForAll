@@ -9,18 +9,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 
 @Component({
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatDialogModule,
-    MatCheckboxModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatButtonModule,
-  ],
-  selector: 'app-modal-display',
-  styleUrls: ['./modal-display.component.scss'],
-  templateUrl: './modal-display.component.html',
+    imports: [
+        CommonModule,
+        MatDialogModule,
+        MatCheckboxModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatButtonModule,
+    ],
+    selector: 'app-modal-display',
+    styleUrls: ['./modal-display.component.scss'],
+    templateUrl: './modal-display.component.html'
 })
 export class ModalDisplayComponent implements OnInit {
   report: any;

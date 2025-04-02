@@ -1,27 +1,24 @@
-/* eslint-disable prettier/prettier */
-import { Injectable, BadRequestException, UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Injectable, BadRequestException, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { User } from './user.entity';
+import { User } from './user.schema'; // Updated to schema
 import { CreateUserDto, LoginUserDto } from './users.dto';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User, 'authConnection') // Using custom database connection
-    private userRepository: Repository<User>,
+    @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
   ) {}
 
-  async register(createUserDto: CreateUserDto): Promise<{ message: string }> {
+  async register(createUserDto: CreateUserDto): Promise<{ message: string; token: string }> {
     try {
       const { username, password } = createUserDto;
 
       // Check if username already exists
-      const existingUser = await this.userRepository.findOne({where: { username }});
-
+      const existingUser = await this.userModel.findOne({ username });
       if (existingUser) {
         throw new BadRequestException('Username already exists.');
       }
@@ -30,32 +27,32 @@ export class AuthService {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // Create and save the new user
-      const newUser = this.userRepository.create({
+      const newUser = new this.userModel({
         username,
         password: hashedPassword,
       });
-      await this.userRepository.save(newUser);
+      await newUser.save();
 
-      return { message: 'User registered successfully!' };
+      // Generate JWT token
+      const token = this.jwtService.sign({ id: newUser._id, username: newUser.username });
+
+      return { message: 'User registered successfully!', token };
     } catch (error) {
-      console.error('Registration error:', error); // This will log more details
+      console.error('Registration error:', error);
       throw new InternalServerErrorException('Registration failed. Please try again.');
     }
   }
 
+  // Login method remains similar, just update to use Mongoose
   async login(loginUserDto: LoginUserDto): Promise<{ message: string; token: string }> {
     const { username, password } = loginUserDto;
 
-    // Find the user by username
-    const user = await this.userRepository.findOne({where: { username }});
-
+    const user = await this.userModel.findOne({ username });
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Invalid credentials.');
     }
 
-    // Generate a JWT token (replace with actual token generation logic)
-    const token = this.jwtService.sign({ id: user.id, username: user.username }, { expiresIn: '8h' });
-
+    const token = this.jwtService.sign({ id: user._id, username: user.username });
     return { message: 'Login successful!', token };
   }
 }

@@ -7,11 +7,10 @@ import { CommonModule } from '@angular/common';
 import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [CommonModule, RouterOutlet, NgbModule, MatNativeDateModule],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+    selector: 'app-root',
+    imports: [CommonModule, RouterOutlet, NgbModule, MatNativeDateModule],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.scss'
 })
 export class AppComponent {
   title = 'BeamForAll';

@@ -5,12 +5,11 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'register',
-  standalone: true,
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss'],
-  imports: [CommonModule, ReactiveFormsModule],
-  providers: [AuthService],
+    selector: 'register',
+    templateUrl: './register.component.html',
+    styleUrls: ['./register.component.scss'],
+    imports: [CommonModule, ReactiveFormsModule],
+    providers: [AuthService]
 })
 export class RegisterComponent {
   registerForm!: FormGroup;
@@ -19,7 +18,7 @@ export class RegisterComponent {
 
   constructor(
     private fb: FormBuilder,
-    private _authService: AuthService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -46,7 +45,7 @@ export class RegisterComponent {
       this.isLoading = true;
       const { username, password,} = this.registerForm.value;
 
-      this._authService.register(username, password,).subscribe({
+      this.authService.register(username, password,).subscribe({
         next: (resp: any) => {
           console.log('Registration success:', resp);
           this.router.navigate(['/login']); // Redirect to login page after successful registration
