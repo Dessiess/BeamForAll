@@ -1,7 +1,9 @@
 <div class="main">
-    <div *ngIf="showNavBar" class="nav-bar">
-        <img src="beam.png" alt="BeamForAll" class="logo-icon" />
-        <div class="add-button" (click)="openDialog()">Kreiraj dostavu</div>
+  @if (showNavBar) {
+    <div class="nav-bar">
+      <img src="beam.png" alt="BeamForAll" class="logo-icon" />
+      <div class="add-button" (click)="openDialog()">Kreiraj dostavu</div>
     </div>
-    <router-outlet></router-outlet>
+  }
+  <router-outlet></router-outlet>
 </div>

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
@@ -8,7 +8,7 @@ import { AuthService } from '../../services/auth.service';
     selector: 'register',
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.scss'],
-    imports: [CommonModule, ReactiveFormsModule],
+    imports: [ReactiveFormsModule],
     providers: [AuthService]
 })
 export class RegisterComponent {
