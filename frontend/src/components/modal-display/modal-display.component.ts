@@ -42,6 +42,7 @@ isLoading: unknown;
 
   onClose(deleted = false): void {
     this._dialogRef.close({ deleted });
+    this._reportService.refreshView.next();
   }
 
   isSaving = false;
