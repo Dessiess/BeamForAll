@@ -11,6 +11,8 @@ import { ModalDisplayComponent } from '../../components/modal-display/modal-disp
 import { firstValueFrom } from 'rxjs';
 import { colors } from './constants/colors.constant';
 import { AuthService } from '../../services/auth.service';
+import { Subject } from 'rxjs';
+
 
 @Component({
     selector: 'app-home',
@@ -44,6 +46,7 @@ endDate: any;
 startDate: any;
 currentView: CalendarView = CalendarView.Week;
 public CalendarView = CalendarView;
+refresh: Subject<void> = new Subject();
   constructor(
     public reportService: ReportService,
     private _dialog: MatDialog,
@@ -165,7 +168,7 @@ public CalendarView = CalendarView;
   private async _fetchEventsAndFormatForTheCalendar(): Promise<void> {
     // tehnika hvatanja response-a sa backend-a
     const reports: any[] = await firstValueFrom(
-      // ovo je taj poziv koji vraca observable - google sta je observable a i sta je promise
+      // ovo je taj poziv koji vraca observable 
       this.reportService.getReports()
     );
 
@@ -175,7 +178,7 @@ public CalendarView = CalendarView;
   }
 
   logout(): void {
-    this.authService.logout(); // Call the AuthService logout method
+    this.authService.logout(); 
   }
 
   onDragStart(event: DragEvent, calendarEvent: any): void {
@@ -184,99 +187,60 @@ public CalendarView = CalendarView;
   }
 
   onDrop(event: DragEvent): void {
-    event.preventDefault();
-  
-    const eventData = event.dataTransfer?.getData('eventData');
-    if (eventData) {
-      const draggedEvent = JSON.parse(eventData);
-  
-      if (!event.target || !(event.target instanceof HTMLElement)) {
-        return;
-      }
-  
-      const slotHeightPx = 30;
-      const startHour = 7;
-      const slotsPerHour = 2;
-  
-      const calendarElement = (event.target as HTMLElement).closest('.cal-day-column');
-      if (!calendarElement) {
-        console.error('Calendar container not found');
-        return;
-      }
-  
-      // Determine the column index from the DOM element
-      const columnIndex = Array.from(calendarElement.parentNode?.children || []).indexOf(calendarElement);
-      if (columnIndex === -1) {
-        console.error('Unable to determine column index');
-        return;
-      }
-  
-      // Define excluded days (e.g., Sundays)
-      const excludeDays = [0]; // Sundays
-  
-      // Calculate the start of the week or current view
-      const currentDate = new Date(this.viewDate);
-      const startOfCurrentView = this.view === CalendarView.Week
-        ? this.startOfWeek(currentDate)
-        : new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  
-      // Calculate the dropped date while skipping excluded days
-      let dayCounter = 0;
-      let droppedDate = new Date(startOfCurrentView);
-  
-      for (let i = 0; i <= columnIndex; i++) {
-        while (excludeDays.includes(droppedDate.getDay())) {
-          droppedDate.setDate(droppedDate.getDate() + 1);
-        }
-        if (i < columnIndex) {
-          droppedDate.setDate(droppedDate.getDate() + 1);
-        }
-      }
-  
-      const calendarRect = calendarElement.getBoundingClientRect();
-      const dropY = event.clientY - calendarRect.top;
-  
-      const totalSlots = Math.floor(dropY / slotHeightPx);
-      const droppedHour = startHour + Math.floor(totalSlots / slotsPerHour);
-      const droppedMinutes = (totalSlots % slotsPerHour) * 30;
-  
-      droppedDate.setHours(droppedHour, droppedMinutes, 0, 0);
-  
-      const startParts = draggedEvent.meta.start_time.split(':').map(Number);
-      const endParts = draggedEvent.meta.end_time.split(':').map(Number);
-  
-      const startDuration = startParts[0] * 3600000 + startParts[1] * 60000 + (startParts[2] || 0) * 1000;
-      const endDuration = endParts[0] * 3600000 + endParts[1] * 60000 + (endParts[2] || 0) * 1000;
-      const durationMs = endDuration - startDuration;
-  
-      const newEndTime = new Date(droppedDate.getTime() + durationMs);
-  
-      draggedEvent.start = droppedDate.toLocaleTimeString();
-      draggedEvent.end = newEndTime.toLocaleTimeString();
-  
-      const eventIndex = this.events.findIndex(event => event.meta.id === draggedEvent.meta.id);
-      if (eventIndex !== -1) {
-        this.events[eventIndex] = { ...draggedEvent };
-  
-        const updatedEvent = {
-          ...draggedEvent.meta,
-          date: droppedDate.toISOString().split('T')[0],
-          start_time: `${String(droppedDate.getHours()).padStart(2, '0')}:${String(droppedDate.getMinutes()).padStart(2, '0')}`,
-          end_time: `${String(newEndTime.getHours()).padStart(2, '0')}:${String(newEndTime.getMinutes()).padStart(2, '0')}`,
-        };
-  
-        this.reportService.update(updatedEvent, draggedEvent.meta.id).subscribe((response: any) => {
-          console.log('Event updated successfully:', response);
-        });
-      }
-    }
+  event.preventDefault();
+
+  const eventData = event.dataTransfer?.getData('eventData');
+  if (!eventData) return;
+
+  const draggedEvent: CalendarEvent = JSON.parse(eventData);
+
+  const column = (event.target as HTMLElement)?.closest('.cal-day-column');
+  if (!column) return;
+
+  const columnIndex = Array.from(column.parentElement!.children).indexOf(column);
+  if (columnIndex === -1) return;
+
+  const viewStart = this.view === CalendarView.Week
+    ? this.startOfWeek(new Date(this.viewDate))
+    : new Date(this.viewDate.getFullYear(), this.viewDate.getMonth(), 1);
+
+  const excludeDays = [0]; // Sundays
+  const droppedDate = new Date(viewStart);
+  let i = 0;
+  while (i < columnIndex) {
+    droppedDate.setDate(droppedDate.getDate() + 1);
+    if (!excludeDays.includes(droppedDate.getDay())) i++;
   }
-  
-  
-  
+
+  const rect = column.getBoundingClientRect();
+  const offsetY = event.clientY - rect.top;
+
+  const SLOT_HEIGHT = 30;
+  const START_HOUR = 7;
+  const slots = Math.floor(offsetY / SLOT_HEIGHT);
+
+  const newHour = START_HOUR + Math.floor(slots / 2);
+  const newMinutes = (slots % 2) * 30;
+
+  droppedDate.setHours(newHour, newMinutes, 0, 0);
+
+  // Compute duration from original event
+  const startParts = draggedEvent.meta.start_time.split(':').map(Number);
+  const endParts = draggedEvent.meta.end_time.split(':').map(Number);
+  const originalStartMin = startParts[0] * 60 + startParts[1];
+  const originalEndMin = endParts[0] * 60 + endParts[1];
+  const durationMin = originalEndMin - originalStartMin;
+  const endDate = new Date(droppedDate.getTime() + durationMin * 60000);
+
+  // Update via helper
+  this._updateEventTime(draggedEvent, droppedDate, endDate);
+}
+
+
+ 
   
   allowDrop(event: DragEvent): void {
-    event.preventDefault(); // Necessary to allow the drop
+    event.preventDefault(); 
   }
 
   private _formatReportToCalendarEvent(report: any): CalendarEvent {
@@ -286,7 +250,6 @@ public CalendarView = CalendarView;
     const [startHours, startMinutes] = start_time.split(':').map(Number);
     const [endHours, endMinutes] = end_time.split(':').map(Number);
   
-    // Round minutes to 00 or 30
     const roundedStartMinutes = startMinutes < 30 ? 0 : 30;
     const roundedEndMinutes = endMinutes < 30 ? 0 : 30;
   
@@ -353,23 +316,43 @@ public CalendarView = CalendarView;
     });
   }
 
-  eventTimesChanged({
-    event,
-    newStart,
-    newEnd,
-  }: CalendarEventTimesChangedEvent): void {
-    event.start = newStart;
-    event.end = newEnd;
-    event.color = this._getColorForEvent(newStart);
+  private _updateEventTime(
+  event: CalendarEvent,
+  newStart: Date,
+  newEnd?: Date
+): void {
+  // Ensure 'end' is always a valid Date
+  const end: Date = newEnd ?? new Date(newStart.getTime() + 30 * 60 * 1000); // default 30 min if undefined
 
-    event.meta.start_time = `${String(newStart.getHours()).padStart(2, '0')}:${String(newStart.getMinutes()).padStart(2, '0')}`;
-    event.meta.end_time = `${String(newEnd?.getHours()).padStart(2, '0')}:${String(newEnd?.getMinutes()).padStart(2, '0')}`;
-    event.meta.date = newStart.toISOString();
+  // Build new event object (do not mutate original)
+  const updatedEvent: CalendarEvent = {
+    ...event,
+    start: newStart,
+    end: end,
+    color: this._getColorForEvent(newStart),
+    meta: {
+      ...event.meta,
+      start_time: `${String(newStart.getHours()).padStart(2,'0')}:${String(newStart.getMinutes()).padStart(2,'0')}`,
+      end_time: `${String(end.getHours()).padStart(2,'0')}:${String(end.getMinutes()).padStart(2,'0')}`,
+      date: newStart.toISOString().split('T')[0]
+    }
+  };
 
-    this.reportService.update(event.meta, event.meta.id).subscribe((response) => {
-      console.log('Event updated successfully:', response);
-    });
-  }
+  // Replace event in events array
+  this.events = this.events.map(e => e.meta.id === event.meta.id ? updatedEvent : e);
+
+  // Refresh calendar view
+  this.refresh.next();
+
+  // Update backend
+  this.reportService.update(updatedEvent.meta, updatedEvent.meta.id)
+    .subscribe(() => console.log('Event updated successfully'));
+}
+
+ eventTimesChanged({ event, newStart, newEnd }: CalendarEventTimesChangedEvent): void {
+  this._updateEventTime(event, newStart, newEnd);
+}
+
 
   handleEvent(action: string, event: CalendarEvent): void {
     this.openDialog(event);
