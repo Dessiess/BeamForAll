@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-
+import { CommonModule } from '@angular/common'; 
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
@@ -8,13 +8,13 @@ import { AuthService } from '../../services/auth.service';
     selector: 'login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
-    imports: [ReactiveFormsModule],
+    imports: [ReactiveFormsModule,CommonModule],
     providers: [AuthService]
 })
 export class LoginComponent {
   loginForm!: FormGroup;
-  errorMessage: string = ''; // To store error messages
-  isLoading: boolean = false; // To handle loading state
+  errorMessage: string = ''; 
+  isLoading: boolean = false; 
 
   constructor(
     private fb: FormBuilder,

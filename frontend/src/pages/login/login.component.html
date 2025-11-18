@@ -13,6 +13,10 @@
           <label for="password">Password</label>
           <input id="password" formControlName="password" type="password" class="form-control" placeholder="Enter password" />
         </div>
+
+        <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
       
         <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">Login</button>
       </form>
