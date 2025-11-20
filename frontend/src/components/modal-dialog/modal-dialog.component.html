@@ -3,11 +3,11 @@
   <form [formGroup]="materialForm" (ngSubmit)="onSubmit()" class="form-grid">
     <div class="grid-item">
       <mat-form-field appearance="fill">
-        <mat-label>Company Name</mat-label>
+        <mat-label>Ime kompanije</mat-label>
         <input matInput formControlName="company_name" required />
         @if (materialForm.get('company_name')?.hasError('required')) {
           <mat-error>
-            Company name is required.
+            Ime kompanije je obavezno.
           </mat-error>
         }
       </mat-form-field>
@@ -15,11 +15,11 @@
 
     <div class="grid-item">
       <mat-form-field appearance="fill">
-        <mat-label>RN</mat-label>
+        <mat-label>Radni Nalog</mat-label>
         <input matInput formControlName="rn" required />
         @if (materialForm.get('rn')?.hasError('required')) {
           <mat-error>
-            RN is required.
+            Radni nalog je obavezan.
           </mat-error>
         }
       </mat-form-field>
@@ -27,11 +27,11 @@
 
     <div class="grid-item">
       <mat-form-field appearance="fill">
-        <mat-label>Material Type</mat-label>
+        <mat-label>Tip materijala</mat-label>
         <input matInput formControlName="material_type" required />
         @if (materialForm.get('material_type')?.hasError('required')) {
           <mat-error>
-            Material type is required.
+            Tip materijala je obavezan.
           </mat-error>
         }
       </mat-form-field>
@@ -39,11 +39,11 @@
 
     <div class="grid-item">
       <mat-form-field appearance="fill">
-        <mat-label>Package Number</mat-label>
+        <mat-label>Broj dostave</mat-label>
         <input matInput formControlName="package_number" required />
         @if (materialForm.get('package_number')?.hasError('required')) {
           <mat-error>
-            Package number is required.
+            Broj dostave je obavezan.
           </mat-error>
         }
       </mat-form-field>
@@ -51,20 +51,20 @@
 
     <div class="grid-item">
       <mat-form-field appearance="fill">
-        <mat-label>Comment</mat-label>
+        <mat-label>Komentar</mat-label>
         <textarea matInput formControlName="comment"></textarea>
       </mat-form-field>
     </div>
 
     <div class="grid-item">
       <mat-form-field appearance="fill">
-        <mat-label>Date</mat-label>
+        <mat-label>Datum dostave</mat-label>
         <input matInput [matDatepicker]="picker" formControlName="date" required />
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
         @if (materialForm.get('date')?.hasError('required')) {
           <mat-error>
-            Date is required.
+            Datum dostave je obavezan.
           </mat-error>
         }
       </mat-form-field>
@@ -72,11 +72,11 @@
 
     <div class="grid-item">
       <mat-form-field appearance="fill">
-        <mat-label>Start Time</mat-label>
+        <mat-label>Pocetak Dostave</mat-label>
         <input matInput type="time" formControlName="start_time" required />
         @if (materialForm.get('start_time')?.hasError('required')) {
           <mat-error>
-            Start time is required.
+            Vreme pocetka dostave je obavezno.
           </mat-error>
         }
       </mat-form-field>
@@ -84,11 +84,11 @@
 
     <div class="grid-item">
       <mat-form-field appearance="fill">
-        <mat-label>End Time</mat-label>
+        <mat-label>Kraj Dostave</mat-label>
         <input matInput type="time" formControlName="end_time" required />
         @if (materialForm.get('end_time')?.hasError('required')) {
           <mat-error>
-            End time is required.
+            Vreme kraja dostave je obavezno.
           </mat-error>
         }
       </mat-form-field>
