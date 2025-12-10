@@ -11,8 +11,8 @@ export class AuthService {
   
 
  // private loginUrl = 'http://ec2-18-184-238-241.eu-central-1.compute.amazonaws.com/auth/login';
-  private loginUrl = 'http://localhost:3000/auth/login';
-  private registerUrl = 'http://localhost:3000/auth/register';
+  private loginUrl = 'http://18.156.120.138:3000/auth/login';
+  private registerUrl = 'http://18.156.120.138:3000/auth/register';
 
   constructor(private http: HttpClient, private router: Router) { }
 
