@@ -1,24 +1,26 @@
 <div class="wrapper">
   <div class="login-container">
     <img src="beam.png" alt="BeamForAll" class="logo-icon" />
-      <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
-        <h2>Login</h2>
-      
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input id="username" formControlName="username" type="text" class="form-control" placeholder="Enter username" />
-        </div>
-      
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input id="password" formControlName="password" type="password" class="form-control" placeholder="Enter password" />
-        </div>
+    <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
+      <h2>Login</h2>
 
-        <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input id="username" formControlName="username" type="text" class="form-control" placeholder="Enter username" />
       </div>
-      
-        <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">Login</button>
-      </form>
-    </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" formControlName="password" type="password" class="form-control" placeholder="Enter password" />
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">Login</button>
+    </form>
   </div>
+</div>
